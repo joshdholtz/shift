@@ -85,7 +85,7 @@ module Shift
 		
 			if @auth.provided? && @auth.basic? && @auth.credentials
 				begin
-					db = @conn.db(params[:application])
+					db = @conn.db(app_id)
 					authenticated = db.authenticate(@auth.credentials[0], @auth.credentials[1])
 				rescue Mongo::AuthenticationError
 

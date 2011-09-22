@@ -1,26 +1,50 @@
 module Shift
 	module Application
 
-		get '/application/:application/:collection/insert' do
+		post '/document/insert' do
 			# Initializes response variables
 			success = false
 			err_msg = ""
 			data = {}
 
-			authorized, db = required_app_authorization(params[:application], params.key?("debug"))
+			# Gets post parameters
+			app_id = params["app_id"]
+			collection = params["collection"]
+			insert_data = params["data"]
+				
+			# Checks if app_id parameter exists
+			if app_id == nil
+				err_msg = "Please provide app_id"
+				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+			end
+
+			# Checks if collection parameter exists
+			if collection == nil
+				err_msg = "Please provide collection"
+				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+			end
+
+			# Checks if data parameter exists
+			if insert_data == nil
+				err_msg = "Please provide data"
+				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+			end
+
+			authorized, db = required_app_authorization(app_id, params.key?("debug"))
 			unless authorized
 				err_msg = "Error authenticating"
 				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
 			end
+			#return JSON.generate( {"success" => success, "err_msg" => "ENDING HERE: " + app_id + "," + collection + "," + insert_data, "data" => data} )
 
 			# Attempts to authenticat the user into the application
 			# and then inserts the data into the collection specified
 			begin
 				# Replaces the automatic MongoDB ObjectId with a UUID
-				doc = JSON.parse(params["data"])
+				doc = JSON.parse(insert_data)
 				doc["_id"] = UUID.new.generate(:compact)
 
-				col = db.collection(params[:collection])
+				col = db.collection(collection)
 				col.insert(doc)
 			rescue JSON::ParserError
 				# Catches after trying to parse the data
@@ -32,13 +56,17 @@ module Shift
 			return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
 		end
 
-		get '/application/:application/delete/:collection' do
+		get '/collections/delete/:app_id/:collection' do
 			# Initializes response variables
 			success = false
 			err_msg = ""
 			data = {}
 
-			authorized, db = required_app_authorization(params[:application], params.key?("debug"))
+			# Gets the query from the parameters
+			app_id = params[:app_id]
+			collection = params[:collection]
+
+			authorized, db = required_app_authorization(app_id, params.key?("debug"))
 			unless authorized
 				err_msg = "Error authenticating"
 				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
@@ -46,7 +74,7 @@ module Shift
 
 			# Attempts to authenticat the user into the application
 			# and then deletes the collection specified
-			success = db.drop_collection(params[:collection])
+			success = db.drop_collection(collection)
 			unless success
 				err_msg = "Collection does not exist"
 			end
@@ -54,20 +82,22 @@ module Shift
 			return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
 		end
 
-		get '/application/:application/:collection/delete/:query' do
+		get '/documents/delete/:app_id/:collection/:query' do
 			# Initializes response variables
 			success = false
 			err_msg = ""
 			data = {}
 
-			authorized, db = required_app_authorization(params[:application], params.key?("debug"))
+			# Gets the query from the parameters
+			app_id = params[:app_id]
+			collection = params[:collection]
+			query = params[:query]
+
+			authorized, db = required_app_authorization(app_id, params.key?("debug"))
 			unless authorized
 				err_msg = "Error authenticating"
 				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
 			end
-
-			# Gets the query from the parameters
-			query = params[:query]
 
 			begin
 				query = JSON.parse(query)
@@ -79,20 +109,23 @@ module Shift
 
 			# Attempts to authenticat the user into the application
 			# and then deletes the documents from the collection specified
-			col = db.collection(params[:collection])
+			col = db.collection(collection)
 			col.remove(query)
 
 			success = true
 			return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
 		end
 
-		get '/application/:application/query' do
+		get '/collection/list/:app_id' do
 			# Initializes response variables
 			success = false
 			err_msg = ""
 			data = {"collections" => []}
 
-			authorized, db = required_app_authorization(params[:application], params.key?("debug"))
+			# Gets clean url parameters
+			app_id = params[:app_id]
+
+			authorized, db = required_app_authorization(app_id, params.key?("debug"))
 			unless authorized
 				err_msg = "Error authenticating"
 				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
@@ -109,20 +142,24 @@ module Shift
 			return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
 		end
 
-		get '/application/:application/:collection/query/?:query?' do
+		get '/documents/query/:app_id/:collection/?:query?' do
 			# Initializes response variables
 			success = false
 			err_msg = ""
 			data = {"documents" => []}
 
-			authorized, db = required_app_authorization(params[:application], params.key?("debug"))
+			# Gets clean url parameters
+			app_id = params[:app_id]
+			collection = params[:collection]
+			query = params[:query]
+
+			authorized, db = required_app_authorization(app_id, params.key?("debug"))
 			unless authorized
 				err_msg = "Error authenticating"
 				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
 			end
 
 			# Gets the query from the parameters
-			query = params[:query]
 			if query != nil
 				begin
 					query = JSON.parse(query)
@@ -135,7 +172,7 @@ module Shift
 
 			# Attempts to authenticat the user into the application
 			# and then queries from the collection specified
-			col = db.collection(params[:collection])
+			col = db.collection(collection)
 
 			cursor = (query == nil ? col.find() : col.find(query))
 			cursor.each { |row| data["documents"] << row }

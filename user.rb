@@ -46,7 +46,7 @@ module Shift
 			col = db.collection("developers")
 			
 			# Checks if an account with the email already exists
-			if col.find_one( {"email" => email}) != nil
+			if col.find_one( {"email" => email} ) != nil
 				err_msg = "Cannot register - this email already exists"
 				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
 			end
@@ -60,11 +60,25 @@ module Shift
 
 		# TODO Move url params to post params
 		# Creates an application under a user
-		get '/application/create/:id/:name' do
+		post '/application/create' do
 			# Initializes response variables
 			success = false
 			err_msg = ""
 			data = {}
+
+			authorized, user = required_user_authorization(params.key?("debug"))
+			unless authorized
+				err_msg = "Authorization failed"
+				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+			end
+
+			id = user['_id']
+
+			unless params.key?('name')
+				err_msg = "Please provide application name"
+				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+			end
+			name = params['name']
 
 			# Generates keys for the app key and secret key
 			app_id = UUID.new.generate(:compact)
@@ -80,28 +94,28 @@ module Shift
 			col = db.collection("developers")
 
 			# Check if an account with the id doesn't exist
-			if col.find_one( {"_id" => BSON::ObjectId.from_string(params[:id])} ) == nil
+			if col.find_one( {"_id" => id} ) == nil
 				err_msg = "Developer id does not exist"
 				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
 			end
 
-			app = { "applications" => 
-					{"app_id" => app_id,
-					"name" => params[:name], 
-					"access_key" => access_key, 
-					"secret_key" => secret_key}
-				}
+
+			app = {"app_id" => app_id,
+				"name" => params[:name], 
+				"access_key" => access_key, 
+				"secret_key" => secret_key}
+
+			applications = { "applications" => app}
 
 			# Adds the developer to a users collection
-			col.update({"_id" => BSON::ObjectId.from_string(params[:id])}, {"$push" => app})
+			col.update({"_id" => id}, {"$push" => applications})
 
 			# Creates a new database for the application
 			db = @conn.db(app_id)
 			db.add_user(access_key, secret_key)
 
 			success = true
-			data = app # Probably real bad practice and should prob take out by I like consistent
-			return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+			return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => app} )
 
 		end
 
