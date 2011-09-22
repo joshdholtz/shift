@@ -58,9 +58,8 @@ module Shift
 
 		end
 
-		# TODO Move url params to post params
 		# Creates an application under a user
-		post '/application/create' do
+		post '/applications/create' do
 			# Initializes response variables
 			success = false
 			err_msg = ""
@@ -87,7 +86,7 @@ module Shift
 
 			# Authenticates
 			db = @conn.db("admin")
-			db.authenticate("root", "velenspeok0301")
+			db.authenticate("admin", "admin")
 
 			# Gets connection to 'shift' collection
 			db = @conn.db("shift")
@@ -116,6 +115,70 @@ module Shift
 
 			success = true
 			return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => app} )
+
+		end
+
+		get '/applications/list' do
+			# Initializes response variables
+			success = false
+			err_msg = ""
+			data = {}
+
+			authorized, user = required_user_authorization(params.key?("debug"))
+			unless authorized
+				err_msg = "Authorization failed"
+				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+			end
+
+			# Gets the list of applications the user owns
+			if user.key?("applications")
+				data["applications"] = user["applications"]
+			end
+
+			success = true
+			return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+
+		end
+
+		get '/applications/delete/:app_id' do
+			# Initializes response variables
+			success = false
+			err_msg = ""
+			data = {}
+
+			# Gets clean url parameters
+			app_id = params[:app_id]
+
+			authorized, user = required_user_authorization(params.key?("debug"))
+			unless authorized
+				err_msg = "Authorization failed"
+				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+			end
+
+			id = user['_id']
+
+			# Authenticates
+			db = @conn.db("admin")
+			db.authenticate("admin", "admin")
+
+			# Gets connection to 'shift' collection
+			db = @conn.db("shift")
+			col = db.collection("developers")
+
+			# Checks if user own application
+			if col.find_one( {"_id" => id, "applications.app_id" => app_id  } ) == nil
+				err_msg = "Developer does not own this app - " + id.to_s + ", " + app_id
+				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+			end
+
+			@conn.drop_database(app_id)
+
+			# TODO Check for hash if error occurred
+			# Check if an account with the id doesn't exist
+			col.update( { "_id" => id } , { "$pull" => { "applications" => { "app_id" => app_id}  } }) 
+
+			success = true
+			return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
 
 		end
 

@@ -35,7 +35,6 @@ module Shift
 				err_msg = "Error authenticating"
 				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
 			end
-			#return JSON.generate( {"success" => success, "err_msg" => "ENDING HERE: " + app_id + "," + collection + "," + insert_data, "data" => data} )
 
 			# Attempts to authenticat the user into the application
 			# and then inserts the data into the collection specified
