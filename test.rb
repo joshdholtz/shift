@@ -48,8 +48,8 @@ module Shift
 					col.find().each { |row|
 						if row.key?('applications')
 							applications = row['applications']
-							applications.each { |application|
-								dbs << application['app_id']
+							applications.each_key { |app_id|
+								dbs << app_id
 							}
 						end
 					}

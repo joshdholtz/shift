@@ -58,7 +58,7 @@ def test_clean(auth)
 	return get(@base_url + "/test/clean", auth)
 end
 
-#User register
+# User register
 def register_user(email, password)
 	return post(@base_url + "/user/register",  {"email" => email, "password" => password} )
 end
@@ -71,6 +71,11 @@ end
 # List applications
 def list_applications(auth)
 	return get(@base_url + "/applications/list", auth)
+end
+
+# Find application
+def find_application(app_id, auth)
+	return get(@base_url + "/applications/find/" + app_id, auth)
 end
 
 # Delete application
@@ -156,6 +161,14 @@ def run_test
 	end
 	if applications[0]["app_id"] != app_id
 		puts "Applications should only contain \"" + app_id + "\" application"
+		return
+	end
+
+	#Find application
+	resp = JSON.parse(find_application(app_id, Auth.new("joshdholtz@gmail.com", "test1")))
+	puts resp.inspect
+	unless resp["success"]
+		puts "FAILED - find application"
 		return
 	end
 

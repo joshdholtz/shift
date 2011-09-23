@@ -98,16 +98,13 @@ module Shift
 				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
 			end
 
-
 			app = {"app_id" => app_id,
 				"name" => params[:name], 
 				"access_key" => access_key, 
 				"secret_key" => secret_key}
 
-			applications = { "applications" => app}
-
 			# Adds the developer to a users collection
-			col.update({"_id" => id}, {"$push" => applications})
+			col.update({"_id" => id}, {"$set" => { "applications." + app_id => app } })
 
 			# Creates a new database for the application
 			db = @conn.db(app_id)
@@ -132,12 +129,47 @@ module Shift
 
 			# Gets the list of applications the user owns
 			if user.key?("applications")
-				data["applications"] = user["applications"]
+				data["applications"] = user["applications"].values()
 			end
 
 			success = true
 			return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
 
+		end
+
+		get '/applications/find/:app_id' do
+			# Initializes response variables
+			success = false
+			err_msg = ""
+			data = {}
+
+			# Gets clean url parameters
+			app_id = params[:app_id]
+
+			authorized, user = required_user_authorization(params.key?("debug"))
+			unless authorized
+				err_msg = "Authorization failed"
+				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+			end
+
+			id = user["_id"]
+
+			# Authenticates
+			db = @conn.db("admin")
+			db.authenticate("admin", "admin")
+
+			# Gets connection to 'shift' collection
+			db = @conn.db("shift")
+			col = db.collection("developers")
+
+			# Checks if user own application
+			if col.find_one( {"_id" => id, "applications." + app_id => { "$exists" => true }  } ) == nil
+				err_msg = "Developer does not own this app - " + id.to_s + ", " + app_id
+				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+			end
+
+			success = true
+			return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => user["applications"][app_id]} )
 		end
 
 		get '/applications/delete/:app_id' do
@@ -166,7 +198,7 @@ module Shift
 			col = db.collection("developers")
 
 			# Checks if user own application
-			if col.find_one( {"_id" => id, "applications.app_id" => app_id  } ) == nil
+			if col.find_one( {"_id" => id, "applications." + app_id => { "$exists" => true }  } ) == nil
 				err_msg = "Developer does not own this app - " + id.to_s + ", " + app_id
 				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
 			end
@@ -175,7 +207,7 @@ module Shift
 
 			# TODO Check for hash if error occurred
 			# Check if an account with the id doesn't exist
-			col.update( { "_id" => id } , { "$pull" => { "applications" => { "app_id" => app_id}  } }) 
+			col.update({"_id" => id}, {"$unset" => { "applications." + app_id => app } })
 
 			success = true
 			return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
