@@ -65,6 +65,15 @@ module Shift
 			err_msg = ""
 			data = {}
 
+			# Gets post parameters
+			name = params["name"]
+				
+			# Checks if name parameter exists
+			if name  == nil
+				err_msg = "Please provide name"
+				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+			end
+
 			authorized, user = required_user_authorization(params.key?("debug"))
 			unless authorized
 				err_msg = "Authorization failed"
@@ -72,12 +81,6 @@ module Shift
 			end
 
 			id = user['_id']
-
-			unless params.key?('name')
-				err_msg = "Please provide application name"
-				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
-			end
-			name = params['name']
 
 			# Generates keys for the app key and secret key
 			app_id = UUID.new.generate(:compact)
@@ -99,7 +102,7 @@ module Shift
 			end
 
 			app = {"app_id" => app_id,
-				"name" => params[:name], 
+				"name" => name, 
 				"access_key" => access_key, 
 				"secret_key" => secret_key}
 
@@ -171,6 +174,58 @@ module Shift
 			success = true
 			return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => user["applications"][app_id]} )
 		end
+		
+		post '/applications/update/:app_id' do
+			# Initializes response variables
+			success = false
+			err_msg = ""
+			data = {}
+
+			# Gets clean url parameters
+			app_id = params[:app_id]
+
+			# Gets post parameters
+			name = params["name"]
+				
+			# Checks if name parameter exists
+			if name  == nil
+				err_msg = "Please provide name"
+				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+			end
+
+			authorized, user = required_user_authorization(params.key?("debug"))
+			unless authorized
+				err_msg = "Authorization failed"
+				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+			end
+
+			id = user['_id']
+
+			# Authenticates
+			db = @conn.db("admin")
+			db.authenticate("admin", "admin")
+
+			# Gets connection to 'shift' collection
+			db = @conn.db("shift")
+			col = db.collection("developers")
+
+			# Checks if user own application
+			if col.find_one( {"_id" => id, "applications." + app_id => { "$exists" => true }  } ) == nil
+				err_msg = "Developer does not own this app - " + id.to_s + ", " + app_id
+				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+			end
+
+			# TODO Check for hash if error occurred
+			# Updates the application information
+			col.update({"_id" => id}, { "$set" => {"applications." + app_id + ".name" => name } } )
+		
+			# Gets updated application for response	
+			data = col.find_one( {"_id" => id, "applications." + app_id => { "$exists" => true }  } )
+
+			success = true
+			return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data["applications"][app_id]} )
+
+		end
 
 		get '/applications/delete/:app_id' do
 			# Initializes response variables
@@ -206,9 +261,9 @@ module Shift
 			@conn.drop_database(app_id)
 
 			# TODO Check for hash if error occurred
-			# Check if an account with the id doesn't exist
+			# Removes application
 			col.update({"_id" => id}, {"$unset" => { "applications." + app_id => app } })
-
+			
 			success = true
 			return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
 

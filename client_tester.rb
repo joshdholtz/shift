@@ -78,6 +78,11 @@ def find_application(app_id, auth)
 	return get(@base_url + "/applications/find/" + app_id, auth)
 end
 
+# Update application
+def update_application(app_id, name, auth)
+	return post(@base_url + "/applications/update/" + app_id,  {"name" => name}, auth)
+end
+
 # Delete application
 def delete_application(app_id, auth)
 	return get(@base_url + "/applications/delete/" + app_id, auth)
@@ -169,6 +174,32 @@ def run_test
 	puts resp.inspect
 	unless resp["success"]
 		puts "FAILED - find application"
+		return
+	end
+	application = resp["data"]
+	if application["app_id"] != app_id
+		puts "Application' app_id should equal " + app_id
+		return
+	end
+	if application["name"] != "App1"
+		puts "Application's name should equal App1" 
+		return
+	end
+	
+	#Update application
+	resp = JSON.parse(update_application(app_id, "App2", Auth.new("joshdholtz@gmail.com", "test1")))
+	puts resp.inspect
+	unless resp["success"]
+		puts "FAILED - update application"
+		return
+	end
+	application = resp["data"]
+	if application["app_id"] != app_id
+		puts "Application's app_id should equal " + app_id
+		return
+	end
+	if application["name"] != "App2"
+		puts "Application's name should equal App2" 
 		return
 	end
 
