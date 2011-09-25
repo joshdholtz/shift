@@ -93,14 +93,24 @@ def list_collection(app_id, auth)
 	return get(@base_url + "/collection/list/" + app_id, auth)
 end
 
+# Rename collection
+def rename_collection(app_id, collection, new_name, auth)
+	return post(@base_url + "/collections/update", {"app_id" => app_id, "collection" => collection, "new_name" => new_name}, auth)
+end
+
 # Delete collection
 def delete_collection(app_id, collection, auth)
 	return get(@base_url + "/collections/delete/" + app_id + "/" + collection, auth)
 end
 
 # Insert document
-def insert(app_id, collection, data, auth)
+def insert_document(app_id, collection, data, auth)
 	return post(@base_url + "/document/insert",  {"app_id" => app_id, "collection" => collection, "data" => data}, auth)
+end
+
+# Update document
+def update_document(app_id, collection, data, auth)
+	return post(@base_url + "/document/update",  {"app_id" => app_id, "collection" => collection, "data" => data}, auth)
 end
 
 # Query documents
@@ -204,7 +214,7 @@ def run_test
 	end
 
 	#Insert document
-	resp = JSON.parse(insert(app_id, "contacts", JSON.generate( {"first_name" => "Josh", "last_name" => "Holtz", "age" => 22 } ), Auth.new(access_key, secret_key)))
+	resp = JSON.parse(insert_document(app_id, "contacts", JSON.generate( {"first_name" => "Josh", "last_name" => "Holtz", "age" => 22 } ), Auth.new(access_key, secret_key)))
 	puts resp.inspect
 	unless resp["success"]
 		puts "FAILED - insert document"
@@ -232,8 +242,37 @@ def run_test
 		return
 	end
 
+	#Rename collection
+	resp = JSON.parse(rename_collection(app_id, "contacts", "friends", Auth.new(access_key, secret_key)))
+	puts resp.inspect
+	unless resp["success"]
+		puts "FAILED - rename collection"
+		return
+	end
+
+	#List collections
+	resp = JSON.parse(list_collection(app_id, Auth.new(access_key, secret_key)))
+	puts resp.inspect
+	unless resp["success"]
+		puts "FAILED - list collections"
+		return
+	end
+	collections = resp["data"]["collections"]
+	if collections.empty?
+		puts "Collections should not be empty"
+		return
+	end
+	if collections.size != 1
+		puts "Collections should only contain one collection"
+		return
+	end
+	if collections[0] != "friends"
+		puts "Collections should only contain \"friends\" collection"
+		return
+	end
+
 	#Query document
-	resp = JSON.parse(query_documents(app_id, "contacts", nil, Auth.new(access_key, secret_key)))
+	resp = JSON.parse(query_documents(app_id, "friends", nil, Auth.new(access_key, secret_key)))
 	puts resp.inspect
 	unless resp["success"]
 		puts "FAILED - query document"
@@ -265,9 +304,40 @@ def run_test
 		return
 	end
 	doc_id = documents[0]["_id"]
+	doc_to_update = documents[0]
+
+	#Update document
+	doc_to_update["age"] = 23
+	resp = JSON.parse(update_document(app_id, "friends", JSON.generate(doc_to_update), Auth.new(access_key, secret_key)))
+	puts resp.inspect
+	unless resp["success"]
+		puts "FAILED - update document"
+		return
+	end
+	documents = resp["data"]
+	if documents.empty?
+		puts "Documentss should not be empty"
+		return
+	end
+	if !documents.key?("_id")
+		puts "Documents should have _id"
+		return
+	end
+	if documents["first_name"] != "Josh"
+		puts "Documents first_name should be Josh"
+		return
+	end
+	if documents["last_name"] != "Holtz"
+		puts "Documents last_name should be Holtz"
+		return
+	end
+	if documents["age"] != 23
+		puts "Documents age should be 23"
+		return
+	end
 
 	#Delete document
-	resp = JSON.parse(delete_documents(app_id, "contacts", JSON.generate( {"_id" => doc_id } ), Auth.new(access_key, secret_key)))
+	resp = JSON.parse(delete_documents(app_id, "friends", JSON.generate( {"_id" => doc_id } ), Auth.new(access_key, secret_key)))
 	puts resp.inspect
 	unless resp["success"]
 		puts "FAILED - delete document"
@@ -275,7 +345,7 @@ def run_test
 	end
 
 	#Query document after deletion
-	resp = JSON.parse(query_documents(app_id, "contacts", nil, Auth.new(access_key, secret_key)))
+	resp = JSON.parse(query_documents(app_id, "friends", nil, Auth.new(access_key, secret_key)))
 	puts resp.inspect
 	unless resp["success"]
 		puts "FAILED - query document after deletion"
@@ -288,7 +358,7 @@ def run_test
 	end
 
 	#Delete collection
-	resp = JSON.parse(delete_collection(app_id, "contacts", Auth.new(access_key, secret_key)))
+	resp = JSON.parse(delete_collection(app_id, "friends", Auth.new(access_key, secret_key)))
 	puts resp.inspect
 	unless resp["success"]
 		puts "FAILED - delete collection"

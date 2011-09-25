@@ -55,6 +55,69 @@ module Shift
 			return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
 		end
 
+		post '/document/update' do
+			# Initializes response variables
+			success = false
+			err_msg = ""
+			data = {}
+
+			# Gets post parameters
+			app_id = params["app_id"]
+			collection = params["collection"]
+			insert_data = params["data"]
+				
+			# Checks if app_id parameter exists
+			if app_id == nil
+				err_msg = "Please provide app_id"
+				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+			end
+
+			# Checks if collection parameter exists
+			if collection == nil
+				err_msg = "Please provide collection"
+				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+			end
+
+			# Checks if data parameter exists
+			if insert_data == nil
+				err_msg = "Please provide data"
+				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+			end
+
+			authorized, db = required_app_authorization(app_id, params.key?("debug"))
+			unless authorized
+				err_msg = "Error authenticating"
+				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+			end
+
+			# Attempts to authenticat the user into the application
+			# and then updates the data into the collection specified
+			begin
+				# Replaces the automatic MongoDB ObjectId with a UUID
+				doc = JSON.parse(insert_data)
+				unless doc.key?("_id")
+					err_msg = "Please provide _id key in data"
+					return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+				end
+
+				col = db.collection(collection)
+				if col.find_one({ "_id" => doc["_id"] }) == nil
+					err_msg = "Document with this id does not exist - " + doc["_id"]
+					return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+				end
+
+				col.update({ "_id" => doc["_id"] }, doc)
+				data = doc
+			rescue JSON::ParserError
+				# Catches after trying to parse the data
+				err_msg = "Error parsing data"
+				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+			end
+			
+			success = true	
+			return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+		end
+
 		get '/collections/delete/:app_id/:collection' do
 			# Initializes response variables
 			success = false
@@ -139,6 +202,55 @@ module Shift
 
 			success = true
 			return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+		end
+
+		post '/collections/update' do
+			# Initializes response variables
+			success = false
+			err_msg = ""
+			data = {}
+
+			# Gets post parameters
+			app_id = params["app_id"]
+			collection = params["collection"]
+			new_name = params["new_name"]
+				
+			# Checks if app_id parameter exists
+			if app_id == nil
+				err_msg = "Please provide app_id"
+				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+			end
+				
+			# Checks if collection parameter exists
+			if collection == nil
+				err_msg = "Please provide collection"
+				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+			end
+				
+			# Checks if new_name parameter exists
+			if new_name == nil
+				err_msg = "Please provide new_name"
+				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+			end
+
+			authorized, db = required_app_authorization(app_id, params.key?("debug"))
+			unless authorized
+				err_msg = "Error authenticating"
+				return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+			end
+
+			# NOTE This is a workaround for now since renaming a collection in mongo as an "admin" function
+			# Authenticates
+			db = @conn.db("admin")
+			db.authenticate("admin", "admin")
+
+			# Gets connection to 'shift' collection
+			db = @conn.db(app_id)
+			db.rename_collection(collection, new_name)
+
+			success = true
+			return JSON.generate( {"success" => success, "err_msg" => err_msg, "data" => data} )
+			
 		end
 
 		get '/documents/query/:app_id/:collection/?:query?' do

@@ -39,7 +39,7 @@ module Shift
 			
 			# Authenticates
 			db = @conn.db("admin")
-			db.authenticate("root", "velenspeok0301")
+			db.authenticate("admin", "admin")
 
 			# Gets connection to 'developers' collection
 			db = @conn.db("shift")
