@@ -9,9 +9,9 @@ require 'uuid'
 require 'digest/md5'
 
 require 'authorization'
-require 'test'
-require 'user'
-require 'application'
+require 'routes/test'
+require 'routes/user'
+require 'routes/application'
 
 helpers do
 	include Shift::Authorization
@@ -23,8 +23,8 @@ before do
 
 end
 
-include Shift::Test
-include Shift::User
-include Shift::Application
+include Route::Test
+include Route::User
+include Route::Application
 
 
