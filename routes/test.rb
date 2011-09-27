@@ -2,7 +2,7 @@ module Route
 	module Test
 
 		# This is just a test to play around with features
-		get '/test' do
+		get '/api/test' do
 			if params.key?("help")
 				description="This is just a method to help test"
 				return [200, description]
@@ -16,14 +16,14 @@ module Route
 		end
 
 		# This is just a test to play around with features
-		get '/test/mongo/:application' do
+		get '/api/test/mongo/:application' do
 			authorized, db = required_app_authorization(params[:application], params.key?("debug"))
 			#protected_app!(params[:application])
 			#authorized = authorized_app?(params[:application])
 			"#{authorized}"
 		end
 
-		get '/test/clean' do
+		get '/api/test/clean' do
 			# Initializes response variables
 			success = false
 			err_msg = ""

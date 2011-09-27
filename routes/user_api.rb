@@ -3,13 +3,16 @@ require 'util'
 require 'logic/user'
 
 module Route
-	module User
+	module UserAPI
 
 		# Registers a user
+		# Url:
 		# Params:
 		# * email
 		# * password
-		post '/user/register' do
+		post '/api/user/register' do
+			# I want to implement something like this for all other API calls so that each
+			# API call has its own self documentation
 			if params.key?("help")
 				description = "This function registers a developer to use Shift"
 				parameters = "email, password"
@@ -39,6 +42,7 @@ module Route
 				return Util.error_response(ShiftErrors.e00101_password_is_required)
 			end
 
+			# Calls the logic function for user registration
 			begin
 				success = Logic::User.user_register(@conn, email, password)
 			rescue ShiftError => boom
@@ -49,7 +53,10 @@ module Route
 		end
 
 		# Creates an application under a user
-		post '/applications/create' do
+		# Url:
+		# Params:
+		# * name
+		post '/api/applications/create' do
 			# Initializes response variables
 			success = false
 			err_msg = ""
@@ -63,6 +70,7 @@ module Route
 				return Util.error_response(ShiftErrors.e00200_name_is_required)
 			end
 
+			# Verifies the user is authorized for this route and returns the user object
 			authorized, user = required_user_authorization(params.key?("debug"))
 			unless authorized
 				return Util.error_response(ShiftErrors.e00000_invalid_user_authentication)
@@ -70,6 +78,7 @@ module Route
 
 			id = user['_id']
 
+			# Calls the logic function for create application
 			begin
 				data = Logic::User.create_application(@conn, id, name)
 			rescue ShiftError => boom
@@ -81,17 +90,22 @@ module Route
 
 		end
 
-		get '/applications/list' do
+		# Lists applications under a user
+		# Url:
+		# Params:
+		get '/api/applications/list' do
 			# Initializes response variables
 			success = false
 			err_msg = ""
 			data = {}
 
+			# Verifies the user is authorized for this route and returns the user object
 			authorized, user = required_user_authorization(params.key?("debug"))
 			unless authorized
 				return Util.error_response(ShiftErrors.e00000_invalid_user_authentication)
 			end
 
+			# Calls the logic function for list applications
 			begin
 				data["applications"] = Logic::User.list_applications(user)
 			rescue ShiftError => boom
@@ -102,7 +116,11 @@ module Route
 			return Util.response(success, data)
 		end
 
-		get '/applications/find/:app_id' do
+		# Finds an application under a user
+		# Url:
+		# * app_id
+		# Params:
+		get '/api/applications/find/:app_id' do
 			# Initializes response variables
 			success = false
 			err_msg = ""
@@ -111,11 +129,13 @@ module Route
 			# Gets clean url parameters
 			app_id = params[:app_id]
 
+			# Verifies the user is authorized for this route and returns the user object
 			authorized, user = required_user_authorization(params.key?("debug"))
 			unless authorized
 				return Util.error_response(ShiftErrors.e00000_invalid_user_authentication)
 			end
 
+			# Calls the logic function for find application
 			begin
 				data = Logic::User.find_application(@conn, user, app_id)
 			rescue ShiftError => boom
@@ -126,7 +146,12 @@ module Route
 			return Util.response(success, data)
 		end
 		
-		post '/applications/update/:app_id' do
+		# Updates an application under a user
+		# Url:
+		# * app_id
+		# Params:
+		# * name
+		post '/api/applications/update/:app_id' do
 			# Initializes response variables
 			success = false
 			err_msg = ""
@@ -143,11 +168,13 @@ module Route
 				return Util.error_response(ShiftErrors.e00300_name_is_required)
 			end
 
+			# Verifies the user is authorized for this route and returns the user object
 			authorized, user = required_user_authorization(params.key?("debug"))
 			unless authorized
 				return Util.error_response(ShiftErrors.e00000_invalid_user_authentication)
 			end
 
+			# Calls the logic function for update application
 			begin
 				data = Logic::User.update_application(@conn, user, app_id, name)
 			rescue ShiftError => boom
@@ -159,7 +186,11 @@ module Route
 
 		end
 
-		get '/applications/delete/:app_id' do
+		# Deletes an application under a user
+		# Url:
+		# * app_id
+		# Params:
+		get '/api/applications/delete/:app_id' do
 			# Initializes response variables
 			success = false
 			err_msg = ""
@@ -168,11 +199,13 @@ module Route
 			# Gets clean url parameters
 			app_id = params[:app_id]
 
+			# Verifies the user is authorized for this route and returns the user object
 			authorized, user = required_user_authorization(params.key?("debug"))
 			unless authorized
 				return Util.error_response(ShiftErrors.e00000_invalid_user_authentication)
 			end
 
+			# Calls the logic function for delete application
 			begin
 				success = Logic::User.delete_application(@conn, user, app_id)
 			rescue ShiftError => boom

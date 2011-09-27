@@ -3,9 +3,15 @@ require 'util'
 require 'logic/application'
 
 module Route
-	module Application
+	module ApplicationAPI
 
-		post '/document/insert' do
+		# Inserts a document
+		# Url:
+		# Params:
+		# * app_id
+		# * collection
+		# * insert_data
+		post '/api/document/insert' do
 			# Initializes response variables
 			success = false
 			err_msg = ""
@@ -31,11 +37,13 @@ module Route
 				raise ShiftError.new(ShiftErrors.e01102_data_is_required)
 			end
 
+			# Verifies the application is authorized for this route and returns the MongoDB object
 			authorized, db = required_app_authorization(app_id, params.key?("debug"))
 			unless authorized
 				return Util.error_response(ShiftErrors.e00000_invalid_app_authentication)
 			end
 
+			# Calls the logic function for insert document
 			begin
 				success = Logic::Application.insert_document(db, collection, insert_data)
 			rescue ShiftError => boom
@@ -46,7 +54,13 @@ module Route
 			return Util.response(success, data)
 		end
 
-		post '/document/update' do
+		# Updates a document
+		# Url:
+		# Params:
+		# * app_id
+		# * collection
+		# * insert_data
+		post '/api/document/update' do
 			# Initializes response variables
 			success = false
 			err_msg = ""
@@ -72,11 +86,13 @@ module Route
 				raise ShiftError.new(ShiftErrors.e01202_data_is_required)
 			end
 
+			# Verifies the application is authorized for this route and returns the MongoDB object
 			authorized, db = required_app_authorization(app_id, params.key?("debug"))
 			unless authorized
 				return Util.error_response(ShiftErrors.e00000_invalid_app_authentication)
 			end
 
+			# Calls the logic function for update document
 			begin
 				data = Logic::Application.update_document(db, collection, insert_data)
 			rescue ShiftError => boom
@@ -87,21 +103,28 @@ module Route
 			return Util.response(success, data)
 		end
 
-		get '/collections/delete/:app_id/:collection' do
+		# Delets a collection
+		# Url:
+		# * app_id
+		# * collection
+		# Params:
+		get '/api/collections/delete/:app_id/:collection' do
 			# Initializes response variables
 			success = false
 			err_msg = ""
 			data = {}
 
-			# Gets the query from the parameters
+			# Gets clean url parameters
 			app_id = params[:app_id]
 			collection = params[:collection]
 
+			# Verifies the application is authorized for this route and returns the MongoDB object
 			authorized, db = required_app_authorization(app_id, params.key?("debug"))
 			unless authorized
 				return Util.error_response(ShiftErrors.e00000_invalid_app_authentication)
 			end
 
+			# Calls the logic function for delete collection
 			begin
 				success = Logic::Application.delete_collection(db, collection)
 			rescue ShiftError => boom
@@ -115,22 +138,30 @@ module Route
 			return Util.response(success, data)
 		end
 
-		get '/documents/delete/:app_id/:collection/:query' do
+		# Deletes documents based on a query
+		# Url:
+		# * app_id
+		# * collection
+		# * query
+		# Params:
+		get '/api/documents/delete/:app_id/:collection/:query' do
 			# Initializes response variables
 			success = false
 			err_msg = ""
 			data = {}
 
-			# Gets the query from the parameters
+			# Gets clean url parameters
 			app_id = params[:app_id]
 			collection = params[:collection]
 			query = params[:query]
 
+			# Verifies the application is authorized for this route and returns the MongoDB object
 			authorized, db = required_app_authorization(app_id, params.key?("debug"))
 			unless authorized
 				return Util.error_response(ShiftErrors.e00000_invalid_app_authentication)
 			end
 
+			# Calls the logic function for delete documents
 			begin
 				success = Logic::Application.delete_documents(db, collection, query)
 			rescue ShiftError => boom
@@ -141,7 +172,11 @@ module Route
 			return Util.response(success, data)
 		end
 
-		get '/collection/list/:app_id' do
+		# List collections
+		# Url:
+		# * app_id
+		# Params:
+		get '/api/collection/list/:app_id' do
 			# Initializes response variables
 			success = false
 			err_msg = ""
@@ -150,11 +185,13 @@ module Route
 			# Gets clean url parameters
 			app_id = params[:app_id]
 
+			# Verifies the application is authorized for this route and returns the MongoDB object
 			authorized, db = required_app_authorization(app_id, params.key?("debug"))
 			unless authorized
 				return Util.error_response(ShiftErrors.e00000_invalid_app_authentication)
 			end
 
+			# Calls the logic function for list collections
 			begin
 				data["collections"] = Logic::Application.list_collections(db)
 			rescue ShiftError => boom
@@ -165,7 +202,13 @@ module Route
 			return Util.response(success, data)
 		end
 
-		post '/collections/update' do
+		# Updates a collections name
+		# Url:
+		# Params:
+		# * app_id
+		# * collection
+		# * new_name
+		post '/api/collections/update' do
 			# Initializes response variables
 			success = false
 			err_msg = ""
@@ -191,11 +234,13 @@ module Route
 				raise ShiftError.new(ShiftErrors.e01402_new_name_is_required)
 			end
 
+			# Verifies the application is authorized for this route and returns the MongoDB object
 			authorized, db = required_app_authorization(app_id, params.key?("debug"))
 			unless authorized
 				return Util.error_response(ShiftErrors.e00000_invalid_app_authentication)
 			end
 
+			# Calls the logic function for update collection
 			begin
 				success = Logic::Application.update_collection(@conn, app_id, collection, new_name)
 			rescue ShiftError => boom
@@ -206,7 +251,13 @@ module Route
 			
 		end
 
-		get '/documents/query/:app_id/:collection/?:query?' do
+		# Updates a collections name
+		# Url:
+		# * app_id
+		# * collection
+		# * query
+		# Params:
+		get '/api/documents/query/:app_id/:collection/?:query?' do
 			# Initializes response variables
 			success = false
 			err_msg = ""
@@ -217,11 +268,13 @@ module Route
 			collection = params[:collection]
 			query = params[:query]
 
+			# Verifies the application is authorized for this route and returns the MongoDB object
 			authorized, db = required_app_authorization(app_id, params.key?("debug"))
 			unless authorized
 				return Util.error_response(ShiftErrors.e00000_invalid_app_authentication)
 			end
 
+			# Calls the logic function for query documents
 			begin
 				data["documents"] = Logic::Application.query_documents(db, collection, query)
 			rescue ShiftError => boom

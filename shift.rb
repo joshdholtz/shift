@@ -10,8 +10,11 @@ require 'digest/md5'
 
 require 'authorization'
 require 'routes/test'
-require 'routes/user'
-require 'routes/application'
+require 'routes/website'
+require 'routes/user_website'
+require 'routes/application_website'
+require 'routes/user_api'
+require 'routes/application_api'
 
 helpers do
 	include Shift::Authorization
@@ -23,8 +26,19 @@ before do
 
 end
 
+# Closes a connection from the Mongo connection pool
+after do
+	@conn.close
+end
+
+# Includes routes that are used for the website
+include Route::Website
+include Route::UserWebsite
+include Route::ApplicationWebsite
+
+# Includes routes that are used for the API
 include Route::Test
-include Route::User
-include Route::Application
+include Route::UserAPI
+include Route::ApplicationAPI
 
 
