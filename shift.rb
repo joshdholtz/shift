@@ -22,7 +22,7 @@ end
 
 # Gets a connection from the Mongo connection pool
 before do
-	@conn = Mongo::Connection.new("localhost", 27017, :pool_size => 5, :timeout => 5)
+	@conn = Mongo::Connection.new("127.0.0.1", 27017, :pool_size => 5, :timeout => 5)
 
 end
 

@@ -3,6 +3,7 @@ require 'uri'
 require 'json'
 
 @base_url = "http://thirdshift.dyndns.org:4567/api"
+#@base_url = "http://thirdshiftsoftware.com:4567/api"
 
 Auth = Struct.new(:username, :password)
 Token = Struct.new(:token)
