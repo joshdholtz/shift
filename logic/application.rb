@@ -3,8 +3,24 @@ require 'error'
 module Logic
 	module Application
 
-		def Application.get_db(user, app_id)
+		def Application.get_db(conn, user, app_id)
+			db = nil
 
+			if user.key?("applications") and user["applications"].key?(app_id)
+				access_key = user["applications"][app_id]["access_key"]
+				secret_key = user["applications"][app_id]["secret_key"]
+				
+				begin
+					db = conn.db(app_id)
+					authenticated = db.authenticate(access_key, secret_key)
+				rescue Mongo::AuthenticationError
+					raise ShiftError.new(ShiftErrors.e00000_invalid_app_authentication)
+				end
+			else
+				raise ShiftError.new(ShiftErrors.e00008_invalid_app_id)
+			end
+
+			return db
 		end
 
 		def Application.insert_document(db, collection, insert_data)

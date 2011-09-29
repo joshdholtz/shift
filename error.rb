@@ -47,6 +47,9 @@ module ShiftErrors
 	
 	@e000007 = ShiftErrorMessage.new("00007", "Invalid user id")
 	def e00007_invalid_user_id; @e00007 end
+	
+	@e000008 = ShiftErrorMessage.new("00008", "Invalid app id")
+	def e00008_invalid_app_id; @e00008 end
 
 	# User register errors 
 	@e00100 = ShiftErrorMessage.new("00100", "Email is required for user registration")

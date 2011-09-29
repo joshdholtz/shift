@@ -1,0 +1,27 @@
+<html
+	<head>
+		<title>List Collections</title>
+	</head>
+
+	<body>
+		<h1>Collections</h1>
+		
+		<a href="/">Home</a>
+		<% if session.key?("id") %>
+			<a href="/logout">Logout</a>
+		<% end %>
+
+		<% if session.key?("last_err") %>
+			<%= session["last_err"] %>
+			<% session.delete("last_err") %>
+		<% end %>
+
+		<br/>
+		User id: <%= @id %><br/>
+
+		<% @collections.each { |collection| %>
+			Collection: <a href="/documents/query/<%= @app_id %>/<%= collection %>"><%= collection %></a></br>
+		<%} %>
+
+	</body>
+</html>

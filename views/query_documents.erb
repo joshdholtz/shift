@@ -1,0 +1,27 @@
+<html
+	<head>
+		<title>Query Documents</title>
+	</head>
+
+	<body>
+		<h1>Documents</h1>
+		
+		<a href="/">Home</a>
+		<% if session.key?("id") %>
+			<a href="/logout">Logout</a>
+		<% end %>
+
+		<% if session.key?("last_err") %>
+			<%= session["last_err"] %>
+			<% session.delete("last_err") %>
+		<% end %>
+
+		<br/>
+		User id: <%= @id %><br/>
+
+		<% @documents.each { |document| %>
+			<%= JSON.generate(document) %><br>
+		<%} %>
+
+	</body>
+</html>
