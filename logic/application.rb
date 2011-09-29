@@ -3,6 +3,10 @@ require 'error'
 module Logic
 	module Application
 
+		def Application.get_db(user, app_id)
+
+		end
+
 		def Application.insert_document(db, collection, insert_data)
 			# Attempts to authenticat the user into the application
 			# and then inserts the data into the collection specified

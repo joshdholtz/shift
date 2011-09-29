@@ -1,0 +1,17 @@
+MONGO (server and client)
+sudo apt-get install mongodb
+
+RUBY
+sudo apt-get install ruby
+sudo apt-get install ruby-dev
+
+RUBYGEMS
+sudo apt-get install rubygems
+
+GEMS
+sudo gem install sinatra
+sudo gem install json
+sudo gem install mongo
+sudo gem install uuid
+sudo gem install bson
+sudo gem install bson_ext

@@ -24,17 +24,21 @@ module Shift
 			return authorized, user
 		end
 
-		def authorized_user?()
+		def authorized_user?(email=nil, password=nil)
 			authenticated = false
 			user = nil
-			
-			@auth ||=  Rack::Auth::Basic::Request.new(request.env)
 		
-			if @auth.provided? && @auth.basic? && @auth.credentials
-				begin
+			if email == nil and password == nil	
+				@auth ||=  Rack::Auth::Basic::Request.new(request.env)
+			
+				if @auth.provided? && @auth.basic? && @auth.credentials
 					email = @auth.credentials[0]
 					password = @auth.credentials[1]
-
+				end
+			end
+			
+			if email != nil and password != nil
+				begin
 					db = @conn.db("admin")
 					db.authenticate("root", "velenspeok0301")
 					
@@ -45,7 +49,6 @@ module Shift
 					unless user == nil
 						authenticated = true
 					end
-
 				rescue Mongo::AuthenticationError
 
 				end

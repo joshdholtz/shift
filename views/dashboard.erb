@@ -1,0 +1,31 @@
+<html>
+	<head>
+		<title>Dashboard</title>
+	</head>
+
+	<body>
+		<h1>Register</h1>
+		
+		<a href="/">Home</a>
+		<% if session.key?("id") %>
+			<a href="/logout">Logout</a>
+		<% end %>
+
+		<% if session.key?("last_err") %>
+			<%= session["last_err"] %>
+			<% session.delete("last_err") %>
+		<% end %>
+
+		<br/>
+		User id: <%= @id %><br/>
+
+		<a href="/application/create">Create application</a><br/>
+		<% @applications.each { |application| %>
+			App name: <%= application["name"] %></br>
+			App id: <%= application["app_id"] %></br>
+			Access key: <%= application["access_key"] %></br>
+			Secret key: <%= application["secret_key"] %></br></br>
+		<%} %>
+
+	</body>
+</html>

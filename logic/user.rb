@@ -20,10 +20,18 @@ module Logic
 			# Inserts the user
 			doc = col.insert( {"email" => email, "password" => password} )
 
-			return true
+			return doc
 		end
 
 		def User.create_application(conn, id, name)
+			if id.is_a? String
+				begin
+					id = BSON::ObjectId.from_string(id)
+				rescue BSON::InvalidObjectId
+					raise ShiftError.new(ShiftErrors.e00007_invalid_user_id)
+				end
+			end		
+
 			# Generates keys for the app key and secret key
 			app_id = UUID.new.generate(:compact)
 			access_key = UUID.new.generate
@@ -55,6 +63,25 @@ module Logic
 			db.add_user(access_key, secret_key)
 			
 			return app
+		end
+
+		def User.get_user(conn, user_id)
+			# Authenticates
+			db = conn.db("admin")
+			db.authenticate("admin", "admin")
+
+			# Gets connection to 'shift' collection
+			db = conn.db("shift")
+			col = db.collection("developers")
+
+			user = nil
+			begin
+				user = col.find_one( {"_id" => BSON::ObjectId.from_string(user_id)} )
+			rescue BSON::InvalidObjectId
+				raise ShiftError.new(ShiftErrors.e00007_invalid_user_id)
+			end
+
+			return user
 		end
 
 		def User.list_applications(user)

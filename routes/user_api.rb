@@ -44,11 +44,12 @@ module Route
 
 			# Calls the logic function for user registration
 			begin
-				success = Logic::User.user_register(@conn, email, password)
+				user_id = Logic::User.user_register(@conn, email, password)
 			rescue ShiftError => boom
 				return Util.error_response(boom.error)
 			end
 
+			success = true
 			return Util.response(success, data)
 		end
 

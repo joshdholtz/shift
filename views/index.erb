@@ -1,0 +1,29 @@
+<html>
+	<head>
+		<title>Shift API</title>
+	</head>
+
+	<body>
+		<h1>Welcome to Shift</h1>
+		<h2>Register or sign up</h2>
+
+		<a href="/">Home</a>
+		<% if session.key?("id") %>
+			<a href="/logout">Logout</a>
+		<% end %>
+
+		<% if session.key?("last_err") %>
+			<%= session["last_err"] %>
+			<% session.delete("last_err") %>
+		<% end %>
+
+		<form action="/login" method="post">
+			Email: <input type="text" name="email" /> <br/>
+			Password: <input type="password" name="password" /> <br/>
+			<input type="submit" value="Login" />
+		</form>
+
+		<a href="/user/register">Register for Shift</a>
+
+	</body>
+</html>

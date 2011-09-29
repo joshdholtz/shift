@@ -44,6 +44,9 @@ module ShiftErrors
 	
 	@e000006 = ShiftErrorMessage.new("00006", "Invalid or expired application token")
 	def e00006_invalid_app_token; @e00006 end
+	
+	@e000007 = ShiftErrorMessage.new("00007", "Invalid user id")
+	def e00007_invalid_user_id; @e00007 end
 
 	# User register errors 
 	@e00100 = ShiftErrorMessage.new("00100", "Email is required for user registration")
