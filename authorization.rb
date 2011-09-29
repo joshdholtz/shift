@@ -54,6 +54,36 @@ module Shift
 			return authenticated, user
 		end
 
+		def valid_user_token?
+			authorized = false
+			user = nil
+
+			if env["HTTP_TOKEN"] != nil
+				token = env["HTTP_TOKEN"]
+
+				db = @conn.db("admin")
+				db.authenticate("root", "velenspeok0301")
+				
+				db = @conn.db("shift")
+				col = db.collection("user_sessions")
+
+				token_data = col.find_one( {"_id" => token } )
+				if token_data != nil
+					puts "In token data"
+					user_id = token_data["user_id"]
+					
+					col = db.collection("developers")
+					user = col.find_one( {"_id" => user_id} )
+
+					authorized = (user != nil)
+				end
+
+			end
+
+			return authorized, user
+
+		end
+
 		def required_app_authorization(app_id,debug)
 			authorized = false
 			db = nil
@@ -93,6 +123,33 @@ module Shift
 			end
 
 			return authenticated, db
+		end
+
+		def valid_app_token?
+			authorized = false
+			db = nil
+
+			if env["HTTP_TOKEN"] != nil
+				token = env["HTTP_TOKEN"]
+
+				db_admin = @conn.db("admin")
+				db_admin.authenticate("root", "velenspeok0301")
+				
+				db_admin = @conn.db("shift")
+				col = db_admin.collection("application_sessions")
+
+				token_data = col.find_one( {"_id" => token } )
+				if token_data != nil
+					app_id = token_data["app_id"]
+
+					db = @conn.db(app_id)
+					authorized = (db != nil)
+				end
+
+			end
+
+			return authorized, db
+
 		end
 
 	end

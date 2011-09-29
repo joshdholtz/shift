@@ -39,6 +39,12 @@ module ShiftErrors
 	@e00004 = ShiftErrorMessage.new("00004", "Could not parse data")
 	def e00004_could_not_parse_data; @e00004 end
 	
+	@e000005 = ShiftErrorMessage.new("00005", "Invalid or expired user token")
+	def e00005_invalid_user_token; @e00005 end
+	
+	@e000006 = ShiftErrorMessage.new("00006", "Invalid or expired application token")
+	def e00006_invalid_app_token; @e00006 end
+
 	# User register errors 
 	@e00100 = ShiftErrorMessage.new("00100", "Email is required for user registration")
 	def e00100_email_is_required; @e00100 end

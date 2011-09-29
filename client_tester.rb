@@ -5,14 +5,25 @@ require 'json'
 @base_url = "http://thirdshift.dyndns.org:4567/api"
 
 Auth = Struct.new(:username, :password)
+Token = Struct.new(:token)
 
 def post(url, post_params, auth=nil)
 	url = URI.parse(url)
 
-    	req = Net::HTTP::Post.new(url.path)
+	header = {}
+	unless auth == nil
+		if auth.is_a? Token
+			puts "Adding auth token: " + auth.token
+			header["Token"] = auth.token
+		end
+	end
+
+    	req = Net::HTTP::Post.new(url.path, header)
 	req.form_data = post_params
 	unless auth == nil
-		req.basic_auth auth.username, auth.password
+		if auth.is_a? Auth
+			req.basic_auth auth.username, auth.password
+		end
 	end
 
 	resp = Net::HTTP.start(url.host, url.port) {|http|
@@ -26,9 +37,19 @@ end
 def get(url, auth=nil)
 	url = URI.parse(url)
 
-    	req = Net::HTTP::Get.new(url.path)
+	header = {}
 	unless auth == nil
-		req.basic_auth auth.username, auth.password
+		if auth.is_a? Token
+			puts "Adding auth token: " + auth.token
+			header["Token"] = auth.token
+		end
+	end
+
+    	req = Net::HTTP::Get.new(url.path, header)
+	unless auth == nil
+		if auth.is_a? Auth
+			req.basic_auth auth.username, auth.password
+		end
 	end
 
 	resp = Net::HTTP.start(url.host, url.port) {|http|
@@ -61,6 +82,26 @@ end
 # User register
 def register_user(email, password)
 	return post(@base_url + "/user/register",  {"email" => email, "password" => password} )
+end
+
+# User login
+def login_user(auth)
+	return post(@base_url + "/user/login",  {}, auth)
+end
+
+# User logout
+def logout_user(auth)
+	return post(@base_url + "/user/logout", {}, auth)
+end
+
+# Application login
+def login_app(app_id, auth)
+	return post(@base_url + "/application/login", {"app_id" => app_id}, auth)
+end
+
+# Application logout
+def logout_app(auth)
+	return post(@base_url + "/application/logout", {}, auth)
 end
 
 # Create application
@@ -148,9 +189,25 @@ def run_test
 		puts "FAILED - register user"
 		return
 	end
+	
+	#Login user
+	resp = JSON.parse(login_user(Auth.new("joshdholtz@gmail.com", "test1")))
+	puts "** Login user"
+	puts resp.inspect
+	unless resp["success"]
+		puts "FAILED - login user"
+		return
+	end
+	data = resp["data"]
+	unless data.key?("token")
+		puts "Login should return a token"
+		return
+
+	end
+	user_token = data["token"]
 
 	#Create application
-	resp = JSON.parse(create_application("App1", Auth.new("joshdholtz@gmail.com", "test1")))
+	resp = JSON.parse(create_application("App1", Token.new(user_token)))
 	puts "** Create application"
 	puts resp.inspect
 	unless resp["success"]
@@ -162,7 +219,7 @@ def run_test
 	secret_key = resp["data"]["secret_key"]
 
 	#List application
-	resp = JSON.parse(list_applications(Auth.new("joshdholtz@gmail.com", "test1")))
+	resp = JSON.parse(list_applications(Token.new(user_token)))
 	puts "** List application"
 	puts resp.inspect
 	unless resp["success"]
@@ -184,7 +241,7 @@ def run_test
 	end
 
 	#Find application
-	resp = JSON.parse(find_application(app_id, Auth.new("joshdholtz@gmail.com", "test1")))
+	resp = JSON.parse(find_application(app_id, Token.new(user_token)))
 	puts "** Find application"
 	puts resp.inspect
 	unless resp["success"]
@@ -202,7 +259,7 @@ def run_test
 	end
 	
 	#Update application
-	resp = JSON.parse(update_application(app_id, "App2", Auth.new("joshdholtz@gmail.com", "test1")))
+	resp = JSON.parse(update_application(app_id, "App2", Token.new(user_token)))
 	puts "** Update application"
 	puts resp.inspect
 	unless resp["success"]
@@ -218,9 +275,25 @@ def run_test
 		puts "Application's name should equal App2" 
 		return
 	end
+	
+	#Login application
+	resp = JSON.parse(login_app(app_id, Auth.new(access_key, secret_key)))
+	puts "** Login application"
+	puts resp.inspect
+	unless resp["success"]
+		puts "FAILED - login application"
+		return
+	end
+	data = resp["data"]
+	unless data.key?("token")
+		puts "Login should return a token"
+		return
+
+	end
+	app_token = data["token"]
 
 	#Insert document
-	resp = JSON.parse(insert_document(app_id, "contacts", JSON.generate( {"first_name" => "Josh", "last_name" => "Holtz", "age" => 22 } ), Auth.new(access_key, secret_key)))
+	resp = JSON.parse(insert_document(app_id, "contacts", JSON.generate( {"first_name" => "Josh", "last_name" => "Holtz", "age" => 22 } ), Token.new(app_token)))
 	puts "** Insert document"
 	puts resp.inspect
 	unless resp["success"]
@@ -229,7 +302,7 @@ def run_test
 	end
 
 	#List collections
-	resp = JSON.parse(list_collection(app_id, Auth.new(access_key, secret_key)))
+	resp = JSON.parse(list_collection(app_id, Token.new(app_token)))
 	puts "** List collections"
 	puts resp.inspect
 	unless resp["success"]
@@ -251,7 +324,7 @@ def run_test
 	end
 
 	#Rename collection
-	resp = JSON.parse(rename_collection(app_id, "contacts", "friends", Auth.new(access_key, secret_key)))
+	resp = JSON.parse(rename_collection(app_id, "contacts", "friends", Token.new(app_token)))
 	puts "** Rename collection"
 	puts resp.inspect
 	unless resp["success"]
@@ -260,7 +333,7 @@ def run_test
 	end
 
 	#List collections
-	resp = JSON.parse(list_collection(app_id, Auth.new(access_key, secret_key)))
+	resp = JSON.parse(list_collection(app_id, Token.new(app_token)))
 	puts "** List collections"
 	puts resp.inspect
 	unless resp["success"]
@@ -282,7 +355,7 @@ def run_test
 	end
 
 	#Query document
-	resp = JSON.parse(query_documents(app_id, "friends", nil, Auth.new(access_key, secret_key)))
+	resp = JSON.parse(query_documents(app_id, "friends", nil, Token.new(app_token)))
 	puts "** Query document"
 	puts resp.inspect
 	unless resp["success"]
@@ -319,7 +392,7 @@ def run_test
 
 	#Update document
 	doc_to_update["age"] = 23
-	resp = JSON.parse(update_document(app_id, "friends", JSON.generate(doc_to_update), Auth.new(access_key, secret_key)))
+	resp = JSON.parse(update_document(app_id, "friends", JSON.generate(doc_to_update), Token.new(app_token)))
 	puts "** Update document"
 	puts resp.inspect
 	unless resp["success"]
@@ -349,7 +422,7 @@ def run_test
 	end
 
 	#Delete document
-	resp = JSON.parse(delete_documents(app_id, "friends", JSON.generate( {"_id" => doc_id } ), Auth.new(access_key, secret_key)))
+	resp = JSON.parse(delete_documents(app_id, "friends", JSON.generate( {"_id" => doc_id } ), Token.new(app_token)))
 	puts "** Delete document"
 	puts resp.inspect
 	unless resp["success"]
@@ -358,7 +431,7 @@ def run_test
 	end
 
 	#Query document after deletion
-	resp = JSON.parse(query_documents(app_id, "friends", nil, Auth.new(access_key, secret_key)))
+	resp = JSON.parse(query_documents(app_id, "friends", nil, Token.new(app_token)))
 	puts "** Query docoument"
 	puts resp.inspect
 	unless resp["success"]
@@ -372,7 +445,7 @@ def run_test
 	end
 
 	#Delete collection
-	resp = JSON.parse(delete_collection(app_id, "friends", Auth.new(access_key, secret_key)))
+	resp = JSON.parse(delete_collection(app_id, "friends", Token.new(app_token)))
 	puts "** Delete collection"
 	puts resp.inspect
 	unless resp["success"]
@@ -381,7 +454,7 @@ def run_test
 	end
 
 	#List collections after deletion
-	resp = JSON.parse(list_collection(app_id, Auth.new(access_key, secret_key)))
+	resp = JSON.parse(list_collection(app_id, Token.new(app_token)))
 	puts "** List collections"
 	puts resp.inspect
 	unless resp["success"]
@@ -394,12 +467,30 @@ def run_test
 		return
 	end
 
+	#Application logout
+	resp = JSON.parse(logout_app(Token.new(app_token)))
+	puts "** Logout application"
+	puts resp.inspect
+	unless resp["success"]
+		puts "FAILED - logout application"
+		return
+	end
+
 	#Delete application
-	resp = JSON.parse(delete_application(app_id,  Auth.new("joshdholtz@gmail.com", "test1")))
+	resp = JSON.parse(delete_application(app_id,  Token.new(user_token)))
 	puts "** Delete application"
 	puts resp.inspect
 	unless resp["success"]
 		puts "FAILED - delete application"
+		return
+	end
+
+	#User logout
+	resp = JSON.parse(logout_user(Token.new(user_token)))
+	puts "** Logout user"
+	puts resp.inspect
+	unless resp["success"]
+		puts "FAILED - logout user"
 		return
 	end
 

@@ -5,6 +5,82 @@ require 'logic/application'
 module Route
 	module ApplicationAPI
 
+		# Logs in an application
+		# Url:
+		# Params:
+		# * app_id
+		post '/api/application/login' do
+			# Initializes response variables
+			success = false
+			err_msg = ""
+			data = {}
+
+			# Gets post parameters
+			app_id = params["app_id"]
+				
+			# Checks if app_id parameter exists
+			if app_id == nil
+				return Util.error_response(ShiftErrors.e01100_app_id_is_required)
+			end
+
+			# Verifies the application is authorized for this route and returns the MongoDB object
+			authorized, db = required_app_authorization(app_id, params.key?("debug"))
+			unless authorized
+				return Util.error_response(ShiftErrors.e00000_invalid_app_authentication)
+			end
+
+			# Authenticates
+			db = @conn.db("admin")
+			db.authenticate("admin", "admin")
+
+			# Gets connection to 'application_sessions' collection
+			db = @conn.db("shift")
+			col = db.collection("application_sessions")
+
+			# Generates token and inserts it into the session collection
+			token = UUID.new.generate
+			col.insert( {"_id" => token, "app_id" => app_id} )
+
+			success = true
+			data["token"] = token
+			return Util.response(success, data)
+
+		end
+
+		# Logs out an application
+		# Url:
+		# Params:
+		post '/api/application/logout' do
+			# Initializes response variables
+			success = false
+			err_msg = ""
+			data = {}
+				
+			# Verifies the application is authorized for this route and returns the MongoDB object
+			authorized, db = valid_app_token?
+			unless authorized
+				return Util.error_response(ShiftErrors.e00006_invalid_app_token)
+			end
+
+			# Gets token from header
+			token = env["HTTP_TOKEN"]
+
+			# Authenticates
+			db = @conn.db("admin")
+			db.authenticate("admin", "admin")
+
+			# Gets connection to 'application_sessions' collection
+			db = @conn.db("shift")
+			col = db.collection("application_sessions")
+
+			# Removes token from the session collection
+			col.remove( {"_id" => token} )
+
+			success = true
+			return Util.response(success, data)
+
+		end
+
 		# Inserts a document
 		# Url:
 		# Params:
@@ -24,23 +100,23 @@ module Route
 				
 			# Checks if app_id parameter exists
 			if app_id == nil
-				raise ShiftError.new(ShiftErrors.e01100_app_id_is_required)
+				return Util.error_response(ShiftErrors.e01100_app_id_is_required)
 			end
 
 			# Checks if collection parameter exists
 			if collection == nil
-				raise ShiftError.new(ShiftErrors.e01101_collection_is_required)
+				return Util.error_response(ShiftErrors.e01101_collection_is_required)
 			end
 
 			# Checks if data parameter exists
 			if insert_data == nil
-				raise ShiftError.new(ShiftErrors.e01102_data_is_required)
+				return Util.error_response(ShiftErrors.e01102_data_is_required)
 			end
 
 			# Verifies the application is authorized for this route and returns the MongoDB object
-			authorized, db = required_app_authorization(app_id, params.key?("debug"))
+			authorized, db = valid_app_token?
 			unless authorized
-				return Util.error_response(ShiftErrors.e00000_invalid_app_authentication)
+				return Util.error_response(ShiftErrors.e00006_invalid_app_token)
 			end
 
 			# Calls the logic function for insert document
@@ -73,23 +149,23 @@ module Route
 				
 			# Checks if app_id parameter exists
 			if app_id == nil
-				raise ShiftError.new(ShiftErrors.e01200_app_id_is_required)
+				return Util.error_response(ShiftErrors.e01200_app_id_is_required)
 			end
 
 			# Checks if collection parameter exists
 			if collection == nil
-				raise ShiftError.new(ShiftErrors.e01201_collection_is_required)
+				return Util.error_response(ShiftErrors.e01201_collection_is_required)
 			end
 
 			# Checks if data parameter exists
 			if insert_data == nil
-				raise ShiftError.new(ShiftErrors.e01202_data_is_required)
+				return Util.error_response(ShiftErrors.e01202_data_is_required)
 			end
 
 			# Verifies the application is authorized for this route and returns the MongoDB object
-			authorized, db = required_app_authorization(app_id, params.key?("debug"))
+			authorized, db = valid_app_token?
 			unless authorized
-				return Util.error_response(ShiftErrors.e00000_invalid_app_authentication)
+				return Util.error_response(ShiftErrors.e00006_invalid_app_token)
 			end
 
 			# Calls the logic function for update document
@@ -119,9 +195,9 @@ module Route
 			collection = params[:collection]
 
 			# Verifies the application is authorized for this route and returns the MongoDB object
-			authorized, db = required_app_authorization(app_id, params.key?("debug"))
+			authorized, db = valid_app_token?
 			unless authorized
-				return Util.error_response(ShiftErrors.e00000_invalid_app_authentication)
+				return Util.error_response(ShiftErrors.e00006_invalid_app_token)
 			end
 
 			# Calls the logic function for delete collection
@@ -156,9 +232,9 @@ module Route
 			query = params[:query]
 
 			# Verifies the application is authorized for this route and returns the MongoDB object
-			authorized, db = required_app_authorization(app_id, params.key?("debug"))
+			authorized, db = valid_app_token?
 			unless authorized
-				return Util.error_response(ShiftErrors.e00000_invalid_app_authentication)
+				return Util.error_response(ShiftErrors.e00006_invalid_app_token)
 			end
 
 			# Calls the logic function for delete documents
@@ -186,9 +262,9 @@ module Route
 			app_id = params[:app_id]
 
 			# Verifies the application is authorized for this route and returns the MongoDB object
-			authorized, db = required_app_authorization(app_id, params.key?("debug"))
+			authorized, db = valid_app_token?
 			unless authorized
-				return Util.error_response(ShiftErrors.e00000_invalid_app_authentication)
+				return Util.error_response(ShiftErrors.e00006_invalid_app_token)
 			end
 
 			# Calls the logic function for list collections
@@ -221,23 +297,23 @@ module Route
 				
 			# Checks if app_id parameter exists
 			if app_id == nil
-				raise ShiftError.new(ShiftErrors.e01400_app_id_is_required)
+				return Util.error_response(ShiftErrors.e01400_app_id_is_required)
 			end
 				
 			# Checks if collection parameter exists
 			if collection == nil
-				raise ShiftError.new(ShiftErrors.e01401_collection_is_required)
+				return Util.error_response(ShiftErrors.e01401_collection_is_required)
 			end
 				
 			# Checks if new_name parameter exists
 			if new_name == nil
-				raise ShiftError.new(ShiftErrors.e01402_new_name_is_required)
+				return Util.error_response(ShiftErrors.e01402_new_name_is_required)
 			end
 
 			# Verifies the application is authorized for this route and returns the MongoDB object
-			authorized, db = required_app_authorization(app_id, params.key?("debug"))
+			authorized, db = valid_app_token?
 			unless authorized
-				return Util.error_response(ShiftErrors.e00000_invalid_app_authentication)
+				return Util.error_response(ShiftErrors.e00006_invalid_app_token)
 			end
 
 			# Calls the logic function for update collection
@@ -269,9 +345,9 @@ module Route
 			query = params[:query]
 
 			# Verifies the application is authorized for this route and returns the MongoDB object
-			authorized, db = required_app_authorization(app_id, params.key?("debug"))
+			authorized, db = valid_app_token?
 			unless authorized
-				return Util.error_response(ShiftErrors.e00000_invalid_app_authentication)
+				return Util.error_response(ShiftErrors.e00006_invalid_app_token)
 			end
 
 			# Calls the logic function for query documents
