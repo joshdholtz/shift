@@ -1,26 +1,28 @@
-<html>
-	<head>
-		<title>Register</title>
-	</head>
+<% if session.key?("last_err") %>
+	<%= session["last_err"] %>
+	<% session.delete("last_err") %>
+<% end %>
 
-	<body>
-		<h1>Register</h1>
+<form action="/register" method="post" class="form-stacked">
+	<fieldset>
+		<legend>Register</legend>
+		<div class="clearfix"> 
+			<label for="email">Email</label> 
+			<div class="input"> 
+				<input class="xlarge" id="email" name="email" size="30" type="text" /> 
+			</div> 
+		</div>
 
-		<a href="/">Home</a>
-		<% if session.key?("id") %>
-			<a href="/logout">Logout</a>
-		<% end %>
+		<div class="clearfix"> 
+			<label for="password">Password</label> 
+			<div class="input"> 
+				<input class="xlarge" id="password" name="password" size="30" type="password" /> 
+			</div> 
+		</div>
 
-		<% if session.key?("last_err") %>
-			<%= session["last_err"] %>
-			<% session.delete("last_err") %>
-		<% end %>
+		<div class="actions"> 
+			<input type="submit" class="btn primary" value="Register">
+		</div>
 
-		<form action="/register" method="post">
-			Email: <input type="text" name="email" /> <br/>
-			Password: <input type="password" name="password" /> <br/>
-			<input type="submit" value="Register" />
-		</form>
-
-	</body>
-</html>
+	</fieldset>
+</form>

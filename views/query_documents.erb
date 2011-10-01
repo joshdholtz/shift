@@ -1,27 +1,39 @@
-<html
-	<head>
-		<title>Query Documents</title>
-	</head>
-
-	<body>
-		<h1>Documents</h1>
-		
-		<a href="/">Home</a>
-		<% if session.key?("id") %>
-			<a href="/logout">Logout</a>
-		<% end %>
-
-		<% if session.key?("last_err") %>
+<% if session.key?("last_err") %>
+	<div class="alert-message error fade in" data-alert="alert">
+		<a class="close" href="#">&times;</a>
+		<p>
 			<%= session["last_err"] %>
-			<% session.delete("last_err") %>
-		<% end %>
+		</p>
+	</div>
+	<% session.delete("last_err") %>
+<% end %>
 
-		<br/>
-		User id: <%= @id %><br/>
 
+<ul class="breadcrumb">
+	<li><a href="/dashboard">Dashboard</a> <span class="divider">/</span></li>
+	<li><a href="/collection/list/<%= @app_id %>"><%= @app_id %></a> <span class="divider">/</span></li>
+	<li class="active"><%= @collection  %></li>
+</ul>
+
+<table class="zebra-striped">
+	<thead>
+		<tr>
+			<th>ID</th>
+			<th>Document</th>
+		</tr>
+	</thead>
+	<tbody>
 		<% @documents.each { |document| %>
-			<%= JSON.generate(document) %><br>
+			<tr>
+				<td>
+					<%= document["_id"] %>
+				</td>
+				<td>
+					<pre>
+						<%= JSON.pretty_generate(document) %>
+					</pre>
+				</td>
+			</tr>
 		<%} %>
-
-	</body>
-</html>
+	</tbody>
+</table>

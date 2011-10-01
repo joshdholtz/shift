@@ -1,27 +1,36 @@
-<html
-	<head>
-		<title>List Collections</title>
-	</head>
-
-	<body>
-		<h1>Collections</h1>
-		
-		<a href="/">Home</a>
-		<% if session.key?("id") %>
-			<a href="/logout">Logout</a>
-		<% end %>
-
-		<% if session.key?("last_err") %>
+<% if session.key?("last_err") %>
+	<div class="alert-message error fade in" data-alert="alert">
+		<a class="close" href="#">&times;</a>
+		<p>
 			<%= session["last_err"] %>
-			<% session.delete("last_err") %>
-		<% end %>
+		</p>
+	</div>
+	<% session.delete("last_err") %>
+<% end %>
 
-		<br/>
-		User id: <%= @id %><br/>
+<ul class="breadcrumb">
+	<li><a href="/dashboard">Dashboard</a> <span class="divider">/</span></li>
+	<li class="active"><%= @app_id %></li>
+</ul>
 
+<table class="zebra-striped">
+	<thead>
+		<tr>
+			<th></th>
+			<th>Collection</th>
+		</tr>
+	</thead>
+	<tbody>
 		<% @collections.each { |collection| %>
-			Collection: <a href="/documents/query/<%= @app_id %>/<%= collection %>"><%= collection %></a></br>
-		<%} %>
+			<tr>
+				<td>
+					<a class="btn" href="/documents/query/<%= @app_id %>/<%= collection %>">Goto</a>
+				</td>
+				<td>
+					<%= collection %>
+				</td>
+			</tr>
 
-	</body>
-</html>
+		<%} %>
+	</tbody>
+</table>

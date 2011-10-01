@@ -1,0 +1,54 @@
+<html>
+	<head>
+		<title>Shift API</title>
+
+		<script src="/js/jquery-1.6.4.min.js" ></script>
+		<script src="/js/bootstrap-alerts.js" ></script>
+		<script src="/js/bootstrap-dropdown.js" ></script>
+		<script src="/js/bootstrap-modal.js" ></script>
+		<script src="/js/bootstrap-twipsy.js" ></script>
+		<script src="/js/bootstrap-popover.js" ></script>
+
+		<script src="/js/prettify.js"></script>
+		<script src="/js/json2.js"></script>
+		<script src="/js/jsonlint.js"></script>
+
+		<link rel="stylesheet" href="/css/bootstrap.css">
+		<link rel="stylesheet" href="/css/bootstrap_fix.css">
+
+	</head>
+
+	<body onload="prettyPrint()">
+		
+		<div class="topbar" > 
+			<div class="topbar-inner"> 
+				<div class="container"> 
+					<a class="brand" href="/">Shift API</a> 
+					<ul class="nav"> 
+						<li class="active"><a href="/">Home</a></li> 
+						<li><a href="#">Features</a></li> 
+						<li><a href="#">Start Here</a></li> 
+						<li><a href="#">Doc</a></li> 
+						<li><a href="#">FAQ</a></li> 
+						<li><a href="#">About</a></li> 
+					</ul>
+					
+					<% if session.key?("id") %>
+						<ul class="nav secondary-nav">
+							<li><a href="/logout">Logout</a></li> 
+						</ul>
+					<% end %>
+
+				</div> 
+			</div> 
+		</div>
+
+		<div class="container" style="padding-top: 60px">
+
+			<%= yield %>
+
+		</div>
+
+
+	</body>
+</html>

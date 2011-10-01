@@ -1,31 +1,44 @@
-<html>
-	<head>
-		<title>Dashboard</title>
-	</head>
-
-	<body>
-		<h1>Dashboard</h1>
-		
-		<a href="/">Home</a>
-		<% if session.key?("id") %>
-			<a href="/logout">Logout</a>
-		<% end %>
-
-		<% if session.key?("last_err") %>
+<% if session.key?("last_err") %>
+	<div class="alert-message error fade in" data-alert="alert">
+		<a class="close" href="#">&times;</a>
+		<p>
 			<%= session["last_err"] %>
-			<% session.delete("last_err") %>
-		<% end %>
+		</p>
+	</div>
+	<% session.delete("last_err") %>
+<% end %>
 
-		<br/>
-		User id: <%= @id %><br/>
+<a class="btn primary" href="/application/create">Create application</a><br/>
 
-		<a href="/application/create">Create application</a><br/>
+<table class="zebra-striped">
+	<thead>
+		<tr>
+			<th></th>
+			<th>App Name</th>
+			<th>App Id</th>
+			<th>Access Key</th>
+			<th>Secret Key</th>
+		</tr>
+	</thead>
+	<tbody>
 		<% @applications.each { |application| %>
-			App name: <a href="/collection/list/<%= application['app_id'] %>"> <%= application["name"] %></a></br>
-			App id: <%= application["app_id"] %></br>
-			Access key: <%= application["access_key"] %></br>
-			Secret key: <%= application["secret_key"] %></br></br>
+			<tr>
+				<td>
+					<a class="btn" href="/collection/list/<%= application['app_id'] %>">Goto</a>
+				</td>
+				<td>
+					<%= application["name"] %>
+				</td>
+				<td>
+					<%= application["app_id"] %>
+				</td>
+				<td>
+					<%= application["access_key"] %>
+				</td>
+				<td>
+					<%= application["secret_key"] %>
+				</td>
+			</tr>
 		<%} %>
-
-	</body>
-</html>
+	</tbody>
+</table>

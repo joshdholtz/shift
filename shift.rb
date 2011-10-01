@@ -17,6 +17,7 @@ require 'routes/user_api'
 require 'routes/application_api'
 
 enable :sessions
+enable :static
 
 helpers do
 	include Shift::Authorization

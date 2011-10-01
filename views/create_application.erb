@@ -1,25 +1,9 @@
-<html>
-	<head>
-		<title>Create Application</title>
-	</head>
+<% if session.key?("last_err") %>
+	<%= session["last_err"] %>
+	<% session.delete("last_err") %>
+<% end %>
 
-	<body>
-		<h1>Create application</h1>
-
-		<a href="/">Home</a>
-		<% if session.key?("id") %>
-			<a href="/logout">Logout</a>
-		<% end %>
-
-		<% if session.key?("last_err") %>
-			<%= session["last_err"] %>
-			<% session.delete("last_err") %>
-		<% end %>
-
-		<form action="/application/create" method="post">
-			Application name: <input type="text" name="name" /> <br/>
-			<input type="submit" value="Create" />
-		</form>
-
-	</body>
-</html>
+<form action="/application/create" method="post">
+	Application name: <input type="text" name="name" /> <br/>
+	<input type="submit" value="Create" />
+</form>
