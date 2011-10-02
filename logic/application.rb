@@ -23,6 +23,18 @@ module Logic
 			return db
 		end
 
+		def Application.create_collection(db, collection)
+			success = false
+			begin
+				db.create_collection(collection)
+				success = true
+			rescue MongoDBError
+				
+			end
+
+			return success
+		end
+
 		def Application.insert_document(db, collection, insert_data)
 			# Attempts to authenticat the user into the application
 			# and then inserts the data into the collection specified

@@ -7,6 +7,48 @@ require 'logic/application'
 module Route
 	module ApplicationWebsite
 
+		get '/app/:app_id/collections/create' do
+			@id = session["id"]
+
+			# Gets clean url parameters
+			@app_id = params[:app_id]
+
+			erb :create_collection
+		end
+
+		post '/app/:app_id/collections/create' do
+			@id = session["id"]
+
+			# Gets clean url parameters
+			@app_id = params[:app_id]
+
+			# Gets post parameters
+			collection = params["collection"]
+				
+			# Checks if collection parameter exists
+			if collection.empty?
+				last_err = "Please provide a collection name"
+				session["last_err"] = last_err
+				redirect '/app/' + @app_id + '/collections/create'
+			end
+
+			# Calls the logic function for create collection
+			begin
+				user = Logic::User.get_user(@conn, @id)
+				db = Logic::Application.get_db(@conn, user, @app_id)
+
+				@collections = Logic::Application.create_collection(db, collection)
+
+				successful = true
+			rescue ShiftError => boom
+				last_err = boom.error.err_msg
+				session["last_err"] = last_err
+				redirect '/app/' + @app_id + '/collections/create'
+			end
+
+			redirect '/collection/list/' + @app_id
+		end
+
 		get '/collection/list/:app_id' do
 			# Gets clean url parameters
 			@app_id = params[:app_id]
