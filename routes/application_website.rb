@@ -7,6 +7,51 @@ require 'logic/application'
 module Route
 	module ApplicationWebsite
 
+		get '/app/:app_id/collections/:collection/doc/create' do
+			@id = session["id"]
+
+			# Gets clean url parameters
+			@app_id = params[:app_id]
+			@collection = params[:collection]
+
+			erb :create_document
+		end
+
+		post '/app/:app_id/collections/:collection/doc/create' do
+			@id = session["id"]
+
+			# Gets clean url parameters
+			@app_id = params[:app_id]
+			@collection = params[:collection]
+
+			# Gets post parameters
+			document = params["document"]
+				
+			# Checks if document parameter exists
+			if document.empty?
+				last_err = "Please provide a document"
+				session["last_err"] = last_err
+				redirect '/app/' + @app_id + '/collections/' + @collection + '/doc/create'
+			end
+
+			# Calls the logic function for create document
+			begin
+				user = Logic::User.get_user(@conn, @id)
+				db = Logic::Application.get_db(@conn, user, @app_id)
+
+				@collections = Logic::Application.insert_document(db, @collection, document)
+
+				successful = true
+			rescue ShiftError => boom
+				last_err = boom.error.err_msg
+				session["last_err"] = last_err
+				redirect '/app/' + @app_id + '/collections/' + @collection + '/doc/create'
+			end
+
+			redirect '/documents/query/' + @app_id + '/' + @collection
+
+		end
+
 		get '/app/:app_id/collections/create' do
 			@id = session["id"]
 

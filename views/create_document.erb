@@ -1,0 +1,26 @@
+<% if session.key?("last_err") %>
+	<div class="alert-message error fade in" data-alert="alert">
+		<a class="close" href="#">&times;</a>
+		<p>
+			<%= session["last_err"] %>
+		</p>
+	</div>
+	<% session.delete("last_err") %>
+<% end %>
+
+<form action="/app/<%= @app_id %>/collections/<%= @collection %>/doc/create" method="post" class="form-stacked">
+	<fieldset>
+		<legend>Create document</legend>
+		<div class="clearfix"> 
+			<label for="document">Create document</label> 
+			<div class="input"> 
+				<textarea class="xlarge" id="document" name="document" size="30" type="text" ></textarea> 
+			</div> 
+		</div>
+
+		<div class="actions"> 
+			<input type="submit" class="btn primary" value="Add document">
+		</div>
+
+	</fieldset>
+</form>

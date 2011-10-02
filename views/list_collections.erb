@@ -10,7 +10,7 @@
 
 <ul class="breadcrumb">
 	<li><a href="/dashboard">Dashboard</a> <span class="divider">/</span></li>
-	<li class="active"><%= @app_id %></li>
+	<li class="active"><a href="/collection/list/<%= @app_id %>"><%= @app_id %></a> <span class="divider">/</span></li>
 </ul>
 
 <a class="btn primary" href="/app/<%= @app_id %>/collections/create">Create collection</a>

@@ -12,8 +12,10 @@
 <ul class="breadcrumb">
 	<li><a href="/dashboard">Dashboard</a> <span class="divider">/</span></li>
 	<li><a href="/collection/list/<%= @app_id %>"><%= @app_id %></a> <span class="divider">/</span></li>
-	<li class="active"><%= @collection  %></li>
+	<li class="active"><a href="/documents/query/<%= @app_id %>/<%= @collection %>"><%= @collection %></li>
 </ul>
+
+<a class="btn primary" href="/app/<%= @app_id %>/collections/<%= @collection %>/doc/create">Create document</a>
 
 <table class="zebra-striped">
 	<thead>
