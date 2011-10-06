@@ -16,6 +16,9 @@
 		<link rel="stylesheet" href="/css/bootstrap.css">
 		<link rel="stylesheet" href="/css/bootstrap_fix.css">
 
+		<!-- start Mixpanel --><script type="text/javascript">var mpq=[];mpq.push(["init","6cc94638cc39ffa2052b0b861438e541"]);(function(){var b,a,e,d,c;b=document.createElement("script");b.type="text/javascript";b.async=true;b.src=(document.location.protocol==="https:"?"https:":"http:")+"//api.mixpanel.com/site_media/js/api/mixpanel.js";a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(b,a);e=function(f){return function(){mpq.push([f].concat(Array.prototype.slice.call(arguments,0)))}};d=["init","track","track_links","track_forms","register","register_once","identify","name_tag","set_config"];for(c=0;c<d.length;c++){mpq[d[c]]=e(d[c])}})();
+		</script><!-- end Mixpanel -->
+
 	</head>
 
 	<body onload="prettyPrint()">
@@ -23,7 +26,7 @@
 		<div class="topbar" > 
 			<div class="topbar-inner"> 
 				<div class="container"> 
-					<a class="brand" href="/">Shift API</a> 
+					<a class="brand" style="font-size: 2.5em;" href="/">Shift API</a> 
 					<ul class="nav"> 
 						<li class="active"><a href="/">Home</a></li> 
 						<li><a href="#">Features</a></li> 
@@ -43,12 +46,22 @@
 			</div> 
 		</div>
 
-		<div class="container" style="padding-top: 60px">
+		<div class="container" style="padding-top: 80px">
 
 			<%= yield %>
 
 		</div>
+		
+		<footer>
+			<div class="container">
 
+				<p class="pull-right"><a href="#">Back to top</a></p>
+				<p>
+					Built for fun. So enjoy.
+				</p>
+
+			</div>
+		</footer>
 
 	</body>
 </html>

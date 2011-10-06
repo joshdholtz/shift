@@ -6,3 +6,12 @@ table {
 	margin-top: 10px;
 	margin-bottom: 10px;
 }
+
+footer {
+	background-color: #CFCFCF;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 60px;
+}
