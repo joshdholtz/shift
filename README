@@ -10,6 +10,7 @@ sudo apt-get install rubygems
 
 GEMS
 sudo gem install sinatra
+sudo gem install rack-test
 sudo gem install json
 sudo gem install mongo
 sudo gem install uuid
