@@ -39,18 +39,21 @@ module Shift
 			
 			if email != nil and password != nil
 				begin
+					
 					db = @conn.db("admin")
-					db.authenticate("root", "velenspeok0301")
+					db.authenticate("admin", "admin")
 					
 					db = @conn.db("shift")
 					col = db.collection("developers")
+
+					puts "Count: " + col.find().count().to_s
 					user = col.find_one( {"email" => email, "password" => password} )
-					
+
 					unless user == nil
 						authenticated = true
 					end
 				rescue Mongo::AuthenticationError
-
+					puts "Mongo authentication error"
 				end
 			end
 
@@ -65,14 +68,13 @@ module Shift
 				token = env["HTTP_TOKEN"]
 
 				db = @conn.db("admin")
-				db.authenticate("root", "velenspeok0301")
+				db.authenticate("admin", "admin")
 				
 				db = @conn.db("shift")
 				col = db.collection("user_sessions")
 
 				token_data = col.find_one( {"_id" => token } )
 				if token_data != nil
-					puts "In token data"
 					user_id = token_data["user_id"]
 					
 					col = db.collection("developers")
@@ -136,7 +138,7 @@ module Shift
 				token = env["HTTP_TOKEN"]
 
 				db_admin = @conn.db("admin")
-				db_admin.authenticate("root", "velenspeok0301")
+				db_admin.authenticate("admin", "admin")
 				
 				db_admin = @conn.db("shift")
 				col = db_admin.collection("application_sessions")
