@@ -27,13 +27,13 @@
 			<div class="topbar-inner"> 
 				<div class="container"> 
 					<a class="brand" style="font-size: 2.5em;" href="/">Shift API</a> 
-					<ul class="nav"> 
-						<li class="active"><a href="/">Home</a></li> 
-						<li><a href="#">Features</a></li> 
-						<li><a href="#">Start Here</a></li> 
-						<li><a href="#">Doc</a></li> 
-						<li><a href="#">FAQ</a></li> 
-						<li><a href="#">About</a></li> 
+					<ul class="nav" style="margin-top: 10px;"> 
+						<li <%= @page == 'index' ? 'class="active"' : "" %> ><a href="/">Home</a></li> 
+						<li <%= @page == 'features' ? 'class="active"' : "" %> ><a href="/features">Features</a></li> 
+						<li <%= @page == 'starthere' ? 'class="active"' : "" %> ><a href="/starthere">Start Here</a></li> 
+						<li <%= @page == 'doc' ? 'class="active"' : "" %> ><a href="/doc">Doc</a></li> 
+						<li <%= @page == 'faq' ? 'class="active"' : "" %> ><a href="/faq">FAQ</a></li> 
+						<li <%= @page == 'about' ? 'class="active"' : "" %> ><a href="/about">About</a></li> 
 					</ul>
 					
 					<% if session.key?("id") %>
