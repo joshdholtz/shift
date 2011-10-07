@@ -10,7 +10,7 @@ module Route
 		# Params:
 		# * email
 		# * password
-		post '/api/user/register' do
+		put '/api/user/register' do
 			# I want to implement something like this for all other API calls so that each
 			# API call has its own self documentation
 			if params.key?("help")
@@ -124,7 +124,7 @@ module Route
 		# Url:
 		# Params:
 		# * name
-		post '/api/applications/create' do
+		post '/api/app' do
 			# Initializes response variables
 			success = false
 			err_msg = ""
@@ -161,7 +161,7 @@ module Route
 		# Lists applications under a user
 		# Url:
 		# Params:
-		get '/api/applications/list' do
+		get '/api/app' do
 			# Initializes response variables
 			success = false
 			err_msg = ""
@@ -188,7 +188,7 @@ module Route
 		# Url:
 		# * app_id
 		# Params:
-		get '/api/applications/find/:app_id' do
+		get '/api/app/:app_id' do
 			# Initializes response variables
 			success = false
 			err_msg = ""
@@ -219,7 +219,7 @@ module Route
 		# * app_id
 		# Params:
 		# * name
-		post '/api/applications/update/:app_id' do
+		put '/api/app/:app_id' do
 			# Initializes response variables
 			success = false
 			err_msg = ""
@@ -258,7 +258,7 @@ module Route
 		# Url:
 		# * app_id
 		# Params:
-		get '/api/applications/delete/:app_id' do
+		delete '/api/app/:app_id' do
 			# Initializes response variables
 			success = false
 			err_msg = ""
