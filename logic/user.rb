@@ -34,8 +34,7 @@ module Logic
 
 			# Generates keys for the app key and secret key
 			app_id = UUID.new.generate(:compact)
-			access_key = UUID.new.generate
-			secret_key = UUID.new.generate
+			pass_key = UUID.new.generate
 
 			# Authenticates
 			db = conn.db("admin")
@@ -52,15 +51,14 @@ module Logic
 
 			app = {"app_id" => app_id,
 				"name" => name, 
-				"access_key" => access_key, 
-				"secret_key" => secret_key}
+				"pass_key" => pass_key}
 
 			# Adds the developer to a users collection
 			col.update({"_id" => id}, {"$set" => { "applications." + app_id => app } })
 
 			# Creates a new database for the application
 			db = conn.db(app_id)
-			db.add_user(access_key, secret_key)
+			db.add_user(app_id, pass_key)
 			
 			return app
 		end

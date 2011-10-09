@@ -57,10 +57,8 @@ class GoodRequestTest < Test::Unit::TestCase
 		assert_equal response['success'], true, response['err_msg']
 		assert_equal response['data']['app_id'], app_id
 		assert_equal response['data']['name'], "App1"
-		assert_not_nil response['data']['access_key']
-		assert_not_nil response['data']['secret_key']
-		access_key = response['data']['access_key']
-		secret_key = response['data']['secret_key']
+		assert_not_nil response['data']['pass_key']
+		pass_key = response['data']['pass_key']
 
 		# Update application
 		header('token',  token)
@@ -69,11 +67,10 @@ class GoodRequestTest < Test::Unit::TestCase
 		assert_equal response['success'], true, response['err_msg']
 		assert_equal response['data']['app_id'], app_id
 		assert_equal response['data']['name'], "App2"
-		assert_not_nil response['data']['access_key']
-		assert_not_nil response['data']['secret_key']
+		assert_not_nil response['data']['pass_key']
 
 		# Application login
-		authorize access_key, secret_key
+		authorize app_id, pass_key
 		post '/api/app/' + app_id + '/login'
 		response = JSON.parse(last_response.body)
 		assert_equal response['success'], true, response['err_msg']
