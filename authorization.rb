@@ -89,30 +89,32 @@ module Shift
 
 		end
 
-		def required_app_authorization(app_id,debug)
+		def required_app_authorization(debug)
+			app_id = false
 			authorized = false
 			db = nil
 
 			if debug
-				authorized, db = protected_app!(app_id)
+				app_id, authorized, db = protected_app!
 			else
-				authorized, db = authorized_app?(app_id)
+				app_id, authorized, db = authorized_app?
 			end
 
-			return authorized, db
+			return app_id, authorized, db
 		end
 
-		def protected_app!(app_id)
-			authorized, db = authorized_app?(app_id)
+		def protected_app!()
+			app_id authorized, db = authorized_app?
 			unless authorized
 				response['WWW-Authenticate'] = %(Basic realm="Testing HTTP Auth")
 				throw(:halt, [401, "Not authorized\n"])
 			end
 
-			return authorized, db
+			return app_id, authorized, db
 		end
 
-		def authorized_app?(app_id)
+		def authorized_app?()
+			app_id = nil
 			authenticated = false
 			db = nil
 
@@ -120,14 +122,17 @@ module Shift
 		
 			if @auth.provided? && @auth.basic? && @auth.credentials
 				begin
+					app_id = @auth.credentials[0]
+					pass_key = @auth.credentials[1]
+
 					db = @conn.db(app_id)
-					authenticated = db.authenticate(@auth.credentials[0], @auth.credentials[1])
+					authenticated = db.authenticate(app_id, pass_key)
 				rescue Mongo::AuthenticationError
 
 				end
 			end
 
-			return authenticated, db
+			return app_id, authenticated, db
 		end
 
 		def valid_app_token?

@@ -1,0 +1,27 @@
+.doc-header {
+	padding-top: 15px;
+}
+
+.doc-rest {
+	background-color: #FEFEFE;
+
+	border: 1px solid #DDD;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+
+	padding: 10px;
+}
+
+.doc-rest-header {
+	font-size: 14px;
+	font-weight: bold;
+}
+
+.doc-rest-content {
+	padding: 10px;
+}
+
+.doc-rest-content li {
+	color: #000000;
+}

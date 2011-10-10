@@ -1,3 +1,377 @@
 <div class="alert-message block-message warning">
 	<strong>Under construction</strong> Come back a few days from now for more information.
 </div>
+
+<div class="row">
+	<div class="span16">
+		<h3>REST Functions Overview</h3>
+		<table class="zebra-striped">
+			<thead>
+				<tr>
+					<th>URL</th>
+					<th>Method</th>
+					<th>Function</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>/api/app/login</td>
+					<td>POST</td>
+					<td><a href="#app_login">Application Login</a></td>
+				</tr>
+				<tr>
+					<td>/api/app/logout</td>
+					<td>POST</td>
+					<td><a href="#app_login">Application Logout</a></td>
+				</tr>
+				<tr>
+					<td>/api/collection/&lt;collection&gt;</td>
+					<td>POST</td>
+					<td><a href="#insert_document">Insert Document</a></td>
+				</tr>
+				<tr>
+					<td>/api/collection/&lt;colection&gt;/&lt;query&gt;</td>
+					<td>GET</td>
+					<td><a href="#query_documents">Query Documents</a></td>
+				</tr>
+				<tr>
+					<td>/api/collection/&lt;collection&gt;</td>
+					<td>PUT</td>
+					<td><a href="#update_document">Update Document</a></td>
+				</tr>
+				<tr>
+					<td>/api/colection/&lt;collection&gt;/&lt;query&gt;</td>
+					<td>DELETE</td>
+					<td><a href="#delete_document">Delete Document</a></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<div class="row" style="vertical-align: bottom;">
+	<div class="span14">
+		<a name="app_login"><h3 class="doc-header">Application Login</h3></a>
+	</div>
+	<div class="span2">
+		<a href="#">Back to top</a>
+	</div>
+</div>
+
+<div class="row">
+	<div class="span16">
+		<div class="doc-rest">
+
+			<div class="doc-rest-header">URL</div>
+			<div class="doc-rest-content">
+				http://shift.rokkincat.com/api/app/login
+			</div>
+
+			<div class="doc-rest-header">Method</div>
+			<div class="doc-rest-content">
+				POST
+			</div>
+
+			<div class="doc-rest-header">Description</div>
+			<div class="doc-rest-content">
+				Validates an application's application id and pass key and returns a session token for the application to use for any other application requests.
+			</div>
+
+			<div class="doc-rest-header">Basic Authentication</div>
+			<div class="doc-rest-content">
+				app_id:pass_key
+			</div>
+
+			<div class="doc-rest-header">Headers</div>
+			<div class="doc-rest-content">
+				None
+			</div>
+
+			<div class="doc-rest-header">Parameters</div>
+			<div class="doc-rest-content">
+				<ul class="unstyled">
+					<li>email</li>
+					<li>password</li>
+				</ul>
+			</div>
+
+			<div class="doc-rest-header">Response</div>
+			<div class="doc-rest-content">
+				{"data":{"token":"some token"},"err_id":"","err_msg":"","success":true}	
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="span14">
+		<a name="app_logout"><h3 class="doc-header">Application Logout</h3></a>
+	</div>
+	<div class="span2">
+		<a href="#">Back to top</a>
+	</div>
+</div>
+
+<div class="row">
+	<div class="span16">
+		<div class="doc-rest">
+
+			<div class="doc-rest-header">URL</div>
+			<div class="doc-rest-content">
+				http://shift.rokkincat.com/api/app/logout
+			</div>
+
+			<div class="doc-rest-header">Method</div>
+			<div class="doc-rest-content">
+				POST
+			</div>
+
+			<div class="doc-rest-header">Description</div>
+			<div class="doc-rest-content">
+				Terminates an application's session and session token.
+			</div>
+
+			<div class="doc-rest-header">Basic Authentication</div>
+			<div class="doc-rest-content">
+				None
+			</div>
+
+			<div class="doc-rest-header">Headers</div>
+			<div class="doc-rest-content">
+				<ul class="unstyled">
+					<li>token</li>
+				</ul>
+			</div>
+
+			<div class="doc-rest-header">Parameters</div>
+			<div class="doc-rest-content">
+				None
+			</div>
+
+			<div class="doc-rest-header">Response</div>
+			<div class="doc-rest-content">
+				{"data":{},"err_id":"","err_msg":"","success":true}
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="span14">
+		<a name="insert_document"><h3 class="doc-header">Insert Document</h3></a>
+	</div>
+	<div class="span2">
+		<a href="#">Back to top</a>
+	</div>
+</div>
+
+<div class="row">
+	<div class="span16">
+		<div class="doc-rest">
+
+			<div class="doc-rest-header">URL</div>
+			<div class="doc-rest-content">
+				http://shift.rokkincat.com/api/collection/&lt;collection&gt;
+			</div>
+
+			<div class="doc-rest-header">Method</div>
+			<div class="doc-rest-content">
+				POST
+			</div>
+
+			<div class="doc-rest-header">Description</div>
+			<div class="doc-rest-content">
+				Inserts a document into a collection.
+			</div>
+
+			<div class="doc-rest-header">Basic Authentication</div>
+			<div class="doc-rest-content">
+				None
+			</div>
+
+			<div class="doc-rest-header">Headers</div>
+			<div class="doc-rest-content">
+				<ul class="unstyled">
+					<li>token</li>
+				</ul>
+			</div>
+
+			<div class="doc-rest-header">Parameters</div>
+			<div class="doc-rest-content">
+				<ul class="unstyled">
+					<li>document</li>
+				</ul>
+			</div>
+
+			<div class="doc-rest-header">Response</div>
+			<div class="doc-rest-content">
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="span14">
+		<a name="query_documents"><h3 class="doc-header">Query Documents</h3></a>
+	</div>
+	<div class="span2">
+		<a href="#">Back to top</a>
+	</div>
+</div>
+
+<div class="row">
+	<div class="span16">
+		<div class="doc-rest">
+
+			<div class="doc-rest-header">URL</div>
+			<div class="doc-rest-content">
+				http://shift.rokkincat.com/api/collection/&lt;collection&gt;
+				http://shift.rokkincat.com/api/collection/&lt;collection&gt;/&lt;query&gt;
+			</div>
+
+			<div class="doc-rest-header">Method</div>
+			<div class="doc-rest-content">
+				GET
+			</div>
+
+			<div class="doc-rest-header">Description</div>
+			<div class="doc-rest-content">
+				Retrieves a list of documents based on the query provided.<br/>
+				If no query is specified, all documents in a collection are retrieved.
+			</div>
+
+			<div class="doc-rest-header">Basic Authentication</div>
+			<div class="doc-rest-content">
+				None
+			</div>
+
+			<div class="doc-rest-header">Headers</div>
+			<div class="doc-rest-content">
+				<ul class="unstyled">
+					<li>token</li>
+				</ul>
+			</div>
+
+			<div class="doc-rest-header">Parameters</div>
+			<div class="doc-rest-content">
+				None
+			</div>
+
+			<div class="doc-rest-header">Response</div>
+			<div class="doc-rest-content">
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="span14">
+		<a name="update_document"><h3 class="doc-header">Update Document</h3></a>
+	</div>
+	<div class="span2">
+		<a href="#">Back to top</a>
+	</div>
+</div>
+
+<div class="row">
+	<div class="span16">
+		<div class="doc-rest">
+
+			<div class="doc-rest-header">URL</div>
+			<div class="doc-rest-content">
+				http://shift.rokkincat.com/api/collection/&lt;collection&gt;
+			</div>
+
+			<div class="doc-rest-header">Method</div>
+			<div class="doc-rest-content">
+				PUT
+			</div>
+
+			<div class="doc-rest-header">Description</div>
+			<div class="doc-rest-content">
+				Updates a document in a collection.
+			</div>
+
+			<div class="doc-rest-header">Basic Authentication</div>
+			<div class="doc-rest-content">
+				None
+			</div>
+
+			<div class="doc-rest-header">Headers</div>
+			<div class="doc-rest-content">
+				<ul class="unstyled">
+					<li>token</li>
+				</ul>
+			</div>
+
+			<div class="doc-rest-header">Parameters</div>
+			<div class="doc-rest-content">
+				<ul class="unstyled">
+					<li>document</li>
+				</ul>
+			</div>
+
+			<div class="doc-rest-header">Response</div>
+			<div class="doc-rest-content">
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="span14">
+		<a name="delete_document"><h3 class="doc-header">Delete Document</h3></a>
+	</div>
+	<div class="span2">
+		<a href="#">Back to top</a>
+	</div>
+</div>
+
+<div class="row">
+	<div class="span16">
+		<div class="doc-rest">
+
+			<div class="doc-rest-header">URL</div>
+			<div class="doc-rest-content">
+				http://shift.rokkincat.com/api/collection/&lt;collection&gt;/&lt;query&gt;
+			</div>
+
+			<div class="doc-rest-header">Method</div>
+			<div class="doc-rest-content">
+				DELETE
+			</div>
+
+			<div class="doc-rest-header">Description</div>
+			<div class="doc-rest-content">
+				Delets a document or documents based on the query.
+			</div>
+
+			<div class="doc-rest-header">Basic Authentication</div>
+			<div class="doc-rest-content">
+				None
+			</div>
+
+			<div class="doc-rest-header">Headers</div>
+			<div class="doc-rest-content">
+				<ul class="unstyled">
+					<li>token</li>
+				</ul>
+			</div>
+
+			<div class="doc-rest-header">Parameters</div>
+			<div class="doc-rest-content">
+				None
+			</div>
+
+			<div class="doc-rest-header">Response</div>
+			<div class="doc-rest-content">
+			</div>
+
+		</div>
+	</div>
+</div>

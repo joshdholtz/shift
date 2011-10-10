@@ -71,7 +71,8 @@ class GoodRequestTest < Test::Unit::TestCase
 
 		# Application login
 		authorize app_id, pass_key
-		post '/api/app/' + app_id + '/login'
+		post '/api/app/login'
+		puts last_response.body
 		response = JSON.parse(last_response.body)
 		assert_equal response['success'], true, response['err_msg']
 		assert_not_nil response['data']['token']
@@ -122,6 +123,7 @@ class GoodRequestTest < Test::Unit::TestCase
 		# Application logout
 		header('token', app_token)	
 		post '/api/app/logout'
+		puts last_response.body
 		response = JSON.parse(last_response.body)
 		assert_equal response['success'], true
 

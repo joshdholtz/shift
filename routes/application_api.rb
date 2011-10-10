@@ -9,22 +9,14 @@ module Route
 		# Url:
 		# Params:
 		# * app_id
-		post '/api/app/:app_id/login' do
+		post '/api/app/login' do
 			# Initializes response variables
 			success = false
 			err_msg = ""
 			data = {}
 
-			# Gets post parameters
-			app_id = params[:app_id]
-				
-			# Checks if app_id parameter exists
-			if app_id == nil
-				return Util.error_response(ShiftErrors.e01100_app_id_is_required)
-			end
-
 			# Verifies the application is authorized for this route and returns the MongoDB object
-			authorized, db = required_app_authorization(app_id, params.key?("debug"))
+			app_id, authorized, db = required_app_authorization(params.key?("debug"))
 			unless authorized
 				return Util.error_response(ShiftErrors.e00000_invalid_app_authentication)
 			end
