@@ -9,10 +9,6 @@
 		<script src="/js/bootstrap-twipsy.js" ></script>
 		<script src="/js/bootstrap-popover.js" ></script>
 
-		<script src="/js/prettify.js"></script>
-		<script src="/js/json2.js"></script>
-		<script src="/js/jsonlint.js"></script>
-
 		<link rel="stylesheet" href="/css/bootstrap.css">
 		<link rel="stylesheet" href="/css/bootstrap_fix.css">
 		<link rel="stylesheet" href="/css/mystyle.css">
@@ -20,9 +16,61 @@
 		<!-- start Mixpanel --><script type="text/javascript">var mpq=[];mpq.push(["init","6cc94638cc39ffa2052b0b861438e541"]);(function(){var b,a,e,d,c;b=document.createElement("script");b.type="text/javascript";b.async=true;b.src=(document.location.protocol==="https:"?"https:":"http:")+"//api.mixpanel.com/site_media/js/api/mixpanel.js";a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(b,a);e=function(f){return function(){mpq.push([f].concat(Array.prototype.slice.call(arguments,0)))}};d=["init","track","track_links","track_forms","register","register_once","identify","name_tag","set_config"];for(c=0;c<d.length;c++){mpq[d[c]]=e(d[c])}})();
 		</script><!-- end Mixpanel -->
 
+		<!-- Start of Zopim Live Chat Script -->
+		<script type="text/javascript">
+			window.$zopim||(function(d,s){var z=$zopim=function(c){z._.push(c)},$=
+			z.s=d.createElement(s),e=d.getElementsByTagName(s)[0];z.set=function(o
+			){z.set._.push(o)};$.setAttribute('charset','utf-8');$.async=!0;z.set.
+			_=[];$.src=('https:'==d.location.protocol?'https://ssl':'http://cdn')+
+			'.zopim.com/?9VCazgPPpDCYmP4LocTxA2B6iHKRSvwR';$.type='text/java'+s;z.
+			t=+new Date;z._=[];e.parentNode.insertBefore($,e)})(document,'script')
+		</script>
+		<!-- End of Zopim Live Chat Script -->
+
+		<script type="text/javascript">
+			$(document).ready( function() {
+
+				$("#overlay").hide();
+
+				$("#login_btn").popover({
+					offset: 10,
+					placement: "below",
+					trigger: "manual",
+					html: true
+				});
+
+				$("#login_btn").click(function() {
+					$("#overlay").show();
+					$("#login_btn").popover('show');
+				});
+
+				$("#overlay").click(function() {
+					$("#overlay").hide();
+					$("#login_btn").popover('hide');
+				});
+
+			})
+
+		</script>
+
+		<style type-"text/stylesheet">
+			#login_btn {
+				color: #FFFFFF;
+				font-weight: bold;
+			}
+
+			#login_btn:hover {
+				background-color: #464646;
+			}
+		</style>
+
 	</head>
 
-	<body onload="prettyPrint()">
+	<body>
+
+		<div id="overlay">
+
+		</div>
 
 		<div class="topbar" > 
 			<div class="topbar-inner"> 
@@ -38,8 +86,38 @@
 					</ul>
 					
 					<% if session.key?("id") %>
-						<ul class="nav secondary-nav">
+						<ul class="nav secondary-nav" style="margin-top: 10px;">
 							<li><a href="/logout">Logout</a></li> 
+						</ul>
+					<% else %>
+						<ul class="nav secondary-nav" style="margin-top: 10px;">
+							<li>
+								<a id="login_btn" title="Login" data-content='
+									<form action="/login" method="post" class="form-stacked">
+										<fieldset>
+											<div class="clearfix"> 
+												<label for="email">Email</label> 
+												<div class="input"> 
+													<input class="large" id="email" name="email" size="30" type="text" /> 
+												</div> 
+											</div>
+
+											<div class="clearfix"> 
+												<label for="password">Password</label> 
+												<div class="input"> 
+													<input class="large" id="password" name="password" size="30" type="password" /> 
+												</div> 
+											</div>
+
+											<input type="submit" class="btn primary" value="Login">
+
+											<p style="padding-top: 10px;">Want to start Shift-ing? <a href="/user/register">Register here</a></p>
+
+										</fieldset>
+									</form>
+									
+								'>Login</a>
+							</li>
 						</ul>
 					<% end %>
 

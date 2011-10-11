@@ -8,24 +8,15 @@
 			<li><h3>No need to worry about server configuration</h3></li>
 			<li><h3>Your data is secured and backed-up for you</h3></li>
 			<li><h3>Thoroughly and continuously tested for a high quality service</h3></li>
+			<li><h3>Use our provided APIs - REST, iOS, Android, and many others to come</h3></li>
 		</ul>
 
 	</div>
 
 	<div class="span6">
-		<% if session.key?("last_err") %>
-			<div class="alert-message error fade in" data-alert="alert">
-				<a class="close" href="#">&times;</a>
-				<p>
-					<%= session["last_err"] %>
-				</p>
-			</div>
-			<% session.delete("last_err") %>
-		<% end %>
-
-		<form action="/login" method="post" class="form-stacked">
+		<form action="/user/register" method="post" class="form-stacked">
 			<fieldset>
-				<legend>Log In</legend>
+				<h4>Not Shift-ing yet? Sign up now!</h4>
 				<div class="clearfix"> 
 					<label for="email">Email</label> 
 					<div class="input"> 
@@ -41,12 +32,10 @@
 				</div>
 
 				<div class="actions"> 
-					<input type="submit" class="btn primary" value="Login">
+					<input type="submit" class="btn primary" value="Register">
 				</div>
 
 			</fieldset>
 		</form>
-
-		<p>Want to start Shift-ing? <a href="/user/register">Register here</a></p>
 	</div>
 </div>

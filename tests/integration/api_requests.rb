@@ -80,13 +80,13 @@ class GoodRequestTest < Test::Unit::TestCase
 
 		# Insert document
 		header('token', app_token)
-		post '/api/collection/contacts', :document => JSON.generate( {"first_name" => "Josh", "last_name" => "Holtz", "age" => 22} )
+		post '/api/doc/contacts', :document => JSON.generate( {"first_name" => "Josh", "last_name" => "Holtz", "age" => 22} )
 		response = JSON.parse(last_response.body)
 		assert_equal response['success'], true, response['err_msg']
 
 		# Query document
 		header('token', app_token)
-		get '/api/collection/contacts'
+		get '/api/doc/contacts'
 		response = JSON.parse(last_response.body)
 		assert_equal response['success'], true, response['err_msg']
 		assert_not_nil response['data']['documents']
@@ -99,7 +99,7 @@ class GoodRequestTest < Test::Unit::TestCase
 
 		# Update document
 		header('token', app_token)
-		put '/api/collection/contacts', :document => JSON.generate( {"_id" => doc_id, "first_name" => "Josh", "last_name" => "Holtz", "age" => 23} )
+		put '/api/doc/contacts', :document => JSON.generate( {"_id" => doc_id, "first_name" => "Josh", "last_name" => "Holtz", "age" => 23} )
 		response = JSON.parse(last_response.body)
 		assert_equal response['success'], true, response['err_msg']
 		assert_equal response['data']['first_name'], "Josh"
@@ -108,13 +108,13 @@ class GoodRequestTest < Test::Unit::TestCase
 
 		# Delete document
 		header('token', app_token)
-		delete '/api/collection/contacts/' + URI.escape( JSON.generate( {"_id" => doc_id } ) )
+		delete '/api/doc/contacts/' + URI.escape( JSON.generate( {"_id" => doc_id } ) )
 		response = JSON.parse(last_response.body)
 		assert_equal response['success'], true, response['err_msg']
 
 		# Query document - after deletion
 		header('token', app_token)
-		get '/api/collection/contacts'
+		get '/api/doc/contacts'
 		response = JSON.parse(last_response.body)
 		assert_equal response['success'], true, response['err_msg']
 		assert_not_nil response['data']['documents']

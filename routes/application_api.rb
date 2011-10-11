@@ -79,7 +79,7 @@ module Route
 		# * collection
 		# * query
 		# Params:
-		get '/api/collection/:collection/?:query?' do
+		get '/api/doc/:collection/?:query?' do
 			# Initializes response variables
 			success = false
 			err_msg = ""
@@ -112,7 +112,7 @@ module Route
 		# * app_id
 		# * collection
 		# * insert_data
-		post '/api/collection/:collection' do
+		post '/api/doc/:collection' do
 			# Initializes response variables
 			success = false
 			err_msg = ""
@@ -150,7 +150,7 @@ module Route
 		# * app_id
 		# * collection
 		# * insert_data
-		put '/api/collection/:collection' do
+		put '/api/doc/:collection' do
 			# Initializes response variables
 			success = false
 			err_msg = ""
@@ -188,7 +188,7 @@ module Route
 		# * collection
 		# * query
 		# Params:
-		delete  '/api/collection/:collection/:query' do
+		delete  '/api/doc/:collection/:query' do
 			# Initializes response variables
 			success = false
 			err_msg = ""
