@@ -7,8 +7,8 @@ module Logic
 			db = nil
 
 			if user.key?("applications") and user["applications"].key?(app_id)
-				access_key = user["applications"][app_id]["access_key"]
-				secret_key = user["applications"][app_id]["secret_key"]
+				access_key = user["applications"][app_id]["app_id"]
+				secret_key = user["applications"][app_id]["pass_key"]
 				
 				begin
 					db = conn.db(app_id)
