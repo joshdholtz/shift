@@ -64,15 +64,12 @@ module Logic
 			end
 
 			unless doc.key?("_id")
-				raise ShiftError.new(ShiftErrors.e01203_document_id_is_required)
+				doc["_id"] = UUID.new.generate(:compact)
 			end
 
 			col = db.collection(collection)
-			if col.find_one({ "_id" => doc["_id"] }) == nil
-				raise ShiftError.new(ShiftErrors.e01204_document_doesnt_exist)
-			end
+			col.save(doc)
 
-			col.update({ "_id" => doc["_id"] }, doc)
 			return doc
 		end
 
