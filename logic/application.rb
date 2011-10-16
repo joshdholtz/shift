@@ -36,6 +36,8 @@ module Logic
 		end
 
 		def Application.insert_document(db, collection, insert_data)
+			doc = nil
+
 			# Attempts to authenticat the user into the application
 			# and then inserts the data into the collection specified
 			begin
@@ -49,7 +51,7 @@ module Logic
 				raise ShiftError.new(ShiftErrors.e00004_could_not_parse_data)
 			end
 
-			return true
+			return doc
 		end
 
 		def Application.update_document(db, collection, insert_data)

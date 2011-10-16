@@ -39,7 +39,7 @@ module Route
 				user = Logic::User.get_user(@conn, @id)
 				db = Logic::Application.get_db(@conn, user, @app_id)
 
-				@collections = Logic::Application.insert_document(db, @collection, document)
+				document = Logic::Application.insert_document(db, @collection, document)
 
 				successful = true
 			rescue ShiftError => boom

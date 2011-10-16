@@ -135,7 +135,7 @@ module Route
 
 			# Calls the logic function for insert document
 			begin
-				success = Logic::Application.insert_document(db, collection, document)
+				data = Logic::Application.insert_document(db, collection, document)
 			rescue ShiftError => boom
 				return Util.error_response(boom.error)
 			end

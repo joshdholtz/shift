@@ -83,10 +83,14 @@ class GoodRequestTest < Test::Unit::TestCase
 		post '/api/doc/contacts', :document => JSON.generate( {"first_name" => "Josh", "last_name" => "Holtz", "age" => 22} )
 		response = JSON.parse(last_response.body)
 		assert_equal response['success'], true, response['err_msg']
+		assert_equal response['data']['first_name'], "Josh"
+		assert_equal response['data']['last_name'], "Holtz"
+		assert_equal response['data']['age'], 22
 
 		# Query document
 		header('token', app_token)
 		get '/api/doc/contacts'
+		puts last_response.body
 		response = JSON.parse(last_response.body)
 		assert_equal response['success'], true, response['err_msg']
 		assert_not_nil response['data']['documents']
