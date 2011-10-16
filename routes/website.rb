@@ -25,7 +25,17 @@ module Route
 
 		get '/doc' do
 			@page = "doc"
-			erb :doc
+			erb :doc_rest
+		end
+
+		get '/doc/rest' do
+			@page = "doc"
+			erb :doc_rest
+		end
+
+		get '/doc/android' do
+			@page = "doc"
+			erb :doc_android
 		end
 
 		get '/faq' do
