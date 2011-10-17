@@ -1,0 +1,64 @@
+<div class="alert-message block-message warning">
+	<strong>Under construction</strong> Come back a few days from now for more information.
+</div>
+
+<ul class="tabs">
+	<li><a href="/starthere/rest">REST</a></li>
+	<li class="active"><a href="/starthere/android">Android</a></li>
+</ul>
+
+
+Download jar here: <a href="/downloads/android/ShiftAndroidLib.jar">Shift Android Library</a>
+
+<h4>Init</h4>
+<pre>
+Shift.init(this, "899d3980d73a012e779643b7a2717e78", "899d3fc0-d73a-012e-7797-43b7a2717e78");
+</pre>
+
+<h4>Save</h4>
+<pre>
+ShiftDoc doc = new ShiftDoc("CollectionName");
+doc.put("foo", "bar");
+doc.saveInBackground(new SaveListener() {
+
+	public void doneSaving(boolean success) {
+		Toast.makeText(ShiftTest.this, "Saved success", Toast.LENGTH_LONG).show();
+	}
+
+});
+</pre>
+
+<h4>Query on ID</h4>
+<pre>
+ShiftDoc queryDoc = ShiftDoc.query("CollectionName", "123456");
+if (queryDoc != null) {
+	output.setText("ID: " + queryDoc.getString("_id") + "\nChannel: " + queryDoc.getString("channel") + "\nLevel: " + queryDoc.getInt("level"));
+}
+</pre>
+
+<h4>Query on... query?</h4>
+<pre>
+JSONObject query = new JSONObject();
+JSONObject gt = new JSONObject();
+gt.put("$gt", 25);
+query.put("age", gt);
+
+ShiftDoc.queryInBackground(new QueryListener() {
+
+	public void doneQuerying(boolean arg0, List<ShiftDoc> arg1) {
+		if (arg0) {
+			Toast.makeText(ShiftTest.this, arg1.size() + " result(s)", Toast.LENGTH_LONG).show();
+		} else {
+			Toast.makeText(ShiftTest.this, "Failed :(", Toast.LENGTH_LONG).show();
+		}
+	}
+
+}, "Contacts", query);
+</pre>
+
+<h4>Delete</h4>
+<pre>
+ShiftDoc doc = new ShiftDoc("Contacts");
+doc.put("_id", "01e78240d907012e77c343b7a2717e78");
+doc.deleteInBackground();
+</pre>

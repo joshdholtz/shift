@@ -20,7 +20,17 @@ module Route
 
 		get '/starthere' do
 			@page = "starthere"
-			erb :starthere
+			erb :starthere_rest
+		end
+
+		get '/starthere/rest' do
+			@page = "starthere"
+			erb :starthere_rest
+		end
+
+		get '/starthere/android' do
+			@page = "starthere"
+			erb :starthere_android
 		end
 
 		get '/doc' do
