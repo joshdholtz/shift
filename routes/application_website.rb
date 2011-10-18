@@ -103,6 +103,8 @@ module Route
 			# Calls the logic function for create application
 			begin
 				user = Logic::User.get_user(@conn, @id)
+				@app_name = user['applications'][@app_id]['name']
+
 				db = Logic::Application.get_db(@conn, user, @app_id)
 
 				@collections = Logic::Application.list_collections(db)
@@ -127,6 +129,8 @@ module Route
 			# Calls the logic function for create application
 			begin
 				user = Logic::User.get_user(@conn, @id)
+				@app_name = user['applications'][@app_id]['name']
+
 				db = Logic::Application.get_db(@conn, user, @app_id)
 
 				@documents = Logic::Application.query_documents(db, @collection)
